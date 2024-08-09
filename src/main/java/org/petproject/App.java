@@ -10,15 +10,19 @@ public class App
 {
     public static void main( String[] args )
     {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        String pathToDB = "/home/nikita/IdeaProjects/CurrencyExchange/currency.db";
         try
                 (
                         // create a database connection
-                        Connection connection = DriverManager.getConnection("jdbc:sqlite:currency.db");
+                        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + pathToDB);
                         Statement statement = connection.createStatement();
                 )
         {
-            statement.setQueryTimeout(30);  // set timeout to 30 sec.
-
             ResultSet rs = statement.executeQuery("select * from currencies");
             while(rs.next())
             {
