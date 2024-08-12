@@ -1,5 +1,7 @@
 package org.petproject;
 
+import org.petproject.servlet.FirstServlet;
+
 import java.sql.*;
 
 /**
@@ -37,5 +39,6 @@ public class App
             // it probably means no database file is found
             e.printStackTrace(System.err);
         }
+
     }
 }
