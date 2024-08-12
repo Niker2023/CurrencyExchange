@@ -17,7 +17,7 @@ public class App
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        String pathToDB = "/home/nikita/IdeaProjects/CurrencyExchange/currency.db";
+        String pathToDB = "currency.db";
         try
                 (
                         // create a database connection
