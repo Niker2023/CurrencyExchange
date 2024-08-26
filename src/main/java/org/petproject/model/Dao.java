@@ -9,7 +9,7 @@ public interface Dao {
 
     List<Currency> getAll();
 
-    void save(Currency currency);
+    Currency save(Currency currency);
 
     void update(Currency currency, String[] params);
 

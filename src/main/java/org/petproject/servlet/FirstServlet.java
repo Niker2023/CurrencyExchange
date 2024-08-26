@@ -18,11 +18,13 @@ public class FirstServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) throws ServletException {
+
         super.init(config);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
         var param = req.getParameter("param");
         var parameterMap = req.getParameterMap();
         resp.setContentType("text/html");
@@ -34,6 +36,7 @@ public class FirstServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         try (var reader = req.getReader();
              var lines = reader.lines()) {
             lines.forEach(System.out::println);
