@@ -1,9 +1,7 @@
 package org.petproject;
 
 import com.google.gson.Gson;
-import org.petproject.model.CurrencyDao;
-
-import java.sql.*;
+import org.petproject.dao.CurrencyDao;
 
 /**
  * Hello world!

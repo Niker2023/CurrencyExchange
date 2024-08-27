@@ -1,4 +1,6 @@
-package org.petproject.model;
+package org.petproject.dao;
+
+import org.petproject.entity.Currency;
 
 import java.util.List;
 import java.util.Optional;

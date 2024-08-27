@@ -1,4 +1,4 @@
-package org.petproject.model;
+package org.petproject.entity;
 
 import lombok.Value;
 

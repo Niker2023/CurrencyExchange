@@ -6,8 +6,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.petproject.model.Currency;
-import org.petproject.model.CurrencyDao;
+import org.petproject.entity.Currency;
+import org.petproject.dao.CurrencyDao;
 
 import java.io.IOException;
 import java.io.PrintWriter;
