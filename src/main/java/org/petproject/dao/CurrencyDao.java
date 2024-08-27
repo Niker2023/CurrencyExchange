@@ -12,7 +12,7 @@ public class CurrencyDao implements Dao {
 
     private final String FIND_ALL= """
             SELECT *
-            FROM CURRENCY
+            FROM CURRENCIES
             """;
 
     private final String INSERT_CURRENCY = """

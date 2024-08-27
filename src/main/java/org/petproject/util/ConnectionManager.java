@@ -6,13 +6,15 @@ import java.sql.SQLException;
 
 public final class ConnectionManager {
 
-    private static final String PATH_TO_DB = "currency.db";
+    private static final String PATH_TO_DB = "/home/niker/IdeaProjects/CurrencyExchange/resources/currency.db";
+//    private static final String PATH_TO_DB = "currency.db";
 
     static {
         loadDriver();
     }
 
     private static void loadDriver() {
+        System.setProperty("java.io.tmpdir", "/var/tmp");
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
