@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface Dao {
 
-    Optional<Currency> get(int id);
+    Optional<Currency> getByCode(String code);
 
     List<Currency> getAll();
 

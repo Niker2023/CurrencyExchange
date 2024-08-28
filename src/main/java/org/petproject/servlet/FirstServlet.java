@@ -13,7 +13,7 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.stream.Stream;
 
-@WebServlet("/")
+//@WebServlet("/")
 public class FirstServlet extends HttpServlet {
 
     @Override

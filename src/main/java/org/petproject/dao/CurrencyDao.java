@@ -10,24 +10,59 @@ import java.util.Optional;
 
 public class CurrencyDao implements Dao {
 
-    private final String FIND_ALL= """
-            SELECT *
-            FROM CURRENCIES
-            """;
-
-    private final String INSERT_CURRENCY = """
-            INSERT INTO CURRENCY(Code, FullName, Sign)
-            VALUES (?, ?, ?)
-            """;
+    private static final CurrencyDao INSTANCE = new CurrencyDao();
 
     private final String FIND_LAST_INSERT = """
-            SELECT last_insert_rowid()
+                    SELECT *
+                    FROM Currencies
+                    ORDER BY id DESC
+                    LIMIT 1
+                    """;
+
+    private final String INSERT_CURRENCY = """
+                INSERT INTO CURRENCIES(Code, FullName, Sign)
+                VALUES (?, ?, ?)
+                """;
+
+    private final String FIND_ALL = """
+                SELECT *
+                FROM CURRENCIES
+                """;
+
+    private final String FIND_BY_CODE = """
+            SELECT *
+            FROM CURRENCIES
+            WHERE Code = ?
             """;
 
 
     @Override
-    public Optional<Currency> get(int id) {
-        return Optional.empty();
+    public Optional<Currency> getByCode(String code) {
+
+        try
+                (
+                        var connection = ConnectionManager.get();
+                        var preparedStatement = connection.prepareStatement(FIND_BY_CODE);
+                )
+        {
+            preparedStatement.setString(1, code);
+            var resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            return Optional.of(new Currency(resultSet.getInt("id"), resultSet.getString("FullName"), resultSet.getString("Code"), resultSet.getString("Sign")));
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
+    private CurrencyDao(){}
+
+
+    public static CurrencyDao getInstance() {
+        return INSTANCE;
     }
 
 
@@ -54,6 +89,7 @@ public class CurrencyDao implements Dao {
 
     @Override
     public Currency save(Currency currency) {
+
         try
                 (
                         var connection = ConnectionManager.get();
@@ -61,16 +97,18 @@ public class CurrencyDao implements Dao {
                 )
         {
             preparedStatement.setString(1, currency.getCode());
-            preparedStatement.setString(2, currency.getCode());
-            preparedStatement.setString(3, currency.getCode());
-            preparedStatement.executeQuery();
+            preparedStatement.setString(2, currency.getName());
+            preparedStatement.setString(3, currency.getSign());
+            preparedStatement.executeUpdate();
 
-            var rs = connection.prepareStatement(FIND_LAST_INSERT).executeQuery();
-            return new Currency(rs.getInt("id"), currency.getCode(), currency.getCode(), currency.getCode());
+            var resultSet = connection.prepareStatement(FIND_LAST_INSERT).executeQuery();
+            resultSet.next();
+            return new Currency(resultSet.getInt("id"), resultSet.getString("FullName"), resultSet.getString("Code"), resultSet.getString("Sign"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     @Override
     public void update(Currency currency, String[] params) {

@@ -10,12 +10,12 @@ import org.petproject.dao.CurrencyDao;
 public class App
 {
 
-    public static void main( String[] args )
-    {
-        Gson gson = new Gson();
-        var currencyDao = new CurrencyDao();
-        var jsonString = gson.toJson(currencyDao.getAll());
-        System.out.println(jsonString);
-
-    }
+//    public static void main( String[] args )
+//    {
+//        Gson gson = new Gson();
+//        var currencyDao = new CurrencyDao();
+//        var jsonString = gson.toJson(currencyDao.getAll());
+//        System.out.println(jsonString);
+//
+//    }
 }
