@@ -5,7 +5,6 @@ import org.petproject.dto.CurrencyDto;
 import org.petproject.entity.Currency;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CurrencyService {
@@ -41,7 +40,6 @@ public class CurrencyService {
 
 
     public CurrencyDto getByCode(String code) {
-        var currency = new Currency(0, code, "", "");
         var byCode = currencyDao.getByCode(code);
         var currentCurrency = byCode.get();
         return new CurrencyDto(currentCurrency.getId(), currentCurrency.getName(), currentCurrency.getCode(), currentCurrency.getSign());

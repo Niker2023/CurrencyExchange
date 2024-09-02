@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CurrencyDao implements Dao {
+public class CurrencyDao {
 
     private static final CurrencyDao INSTANCE = new CurrencyDao();
 
@@ -35,10 +35,14 @@ public class CurrencyDao implements Dao {
             WHERE Code = ?
             """;
 
+    private final String FIND_BY_ID = """
+            SELECT *
+            FROM CURRENCIES
+            WHERE id = ?
+            """;
 
-    @Override
+
     public Optional<Currency> getByCode(String code) {
-
         try
                 (
                         var connection = ConnectionManager.get();
@@ -50,11 +54,29 @@ public class CurrencyDao implements Dao {
             resultSet.next();
 
             return Optional.of(new Currency(resultSet.getInt("id"), resultSet.getString("FullName"), resultSet.getString("Code"), resultSet.getString("Sign")));
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
 
+
+    public Optional<Currency> getById(int id) {
+        try
+                (
+                        var connection = ConnectionManager.get();
+                        var preparedStatement = connection.prepareStatement(FIND_BY_ID);
+                )
+        {
+            preparedStatement.setInt(1, id);
+            var resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            return Optional.of(new Currency(resultSet.getInt("id"),
+                    resultSet.getString("FullName"),
+                    resultSet.getString("Code"),
+                    resultSet.getString("Sign")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -66,7 +88,6 @@ public class CurrencyDao implements Dao {
     }
 
 
-    @Override
     public List<Currency> getAll() {
         try
                 (
@@ -87,7 +108,6 @@ public class CurrencyDao implements Dao {
     }
 
 
-    @Override
     public Currency save(Currency currency) {
 
         try
@@ -103,15 +123,11 @@ public class CurrencyDao implements Dao {
 
             var resultSet = connection.prepareStatement(FIND_LAST_INSERT).executeQuery();
             resultSet.next();
-            return new Currency(resultSet.getInt("id"), resultSet.getString("FullName"), resultSet.getString("Code"), resultSet.getString("Sign"));
+            return new Currency(resultSet.getInt("id"), resultSet.getString("FullName"),
+                    resultSet.getString("Code"), resultSet.getString("Sign"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-
-    @Override
-    public void update(Currency currency, String[] params) {
-
-    }
 }

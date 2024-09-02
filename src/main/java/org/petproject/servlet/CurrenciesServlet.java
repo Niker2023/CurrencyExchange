@@ -1,7 +1,6 @@
 package org.petproject.servlet;
 
 import com.google.gson.Gson;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @WebServlet("/currencies")
-public class СurrenciesServlet extends HttpServlet {
+public class CurrenciesServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -29,7 +28,7 @@ public class СurrenciesServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         var gson = new Gson();
         var currencyService = CurrencyService.getInstance();
@@ -38,8 +37,8 @@ public class СurrenciesServlet extends HttpServlet {
         var code = req.getParameter("code");
         var sign = req.getParameter("sign");
 
-        var currency = new CurrencyDto(0, name, code, sign);
-        var currentCurrency = currencyService.save(currency);
+        var currencyDto = new CurrencyDto(0, name, code, sign);
+        var currentCurrency = currencyService.save(currencyDto);
 
         PrintWriter out = resp.getWriter();
         resp.setContentType("application/json");

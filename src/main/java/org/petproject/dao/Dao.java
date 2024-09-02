@@ -5,14 +5,14 @@ import org.petproject.entity.Currency;
 import java.util.List;
 import java.util.Optional;
 
-public interface Dao {
+public interface Dao<K, T> {
 
-    Optional<Currency> getByCode(String code);
+    Optional<T> getBy(K entity);
 
-    List<Currency> getAll();
+    List<T> getAll();
 
-    Currency save(Currency currency);
+    T save(T entity);
 
-    void update(Currency currency, String[] params);
+    void update(T entity, String[] params);
 
 }

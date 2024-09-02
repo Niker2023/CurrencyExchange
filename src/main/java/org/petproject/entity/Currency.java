@@ -1,12 +1,11 @@
 package org.petproject.entity;
 
 import lombok.Data;
-import lombok.Value;
 
 @Data
 public class Currency {
 
-    private Integer id;
+    private int id;
     private String name;
     private String code;
     private String sign;
