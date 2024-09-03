@@ -67,8 +67,6 @@ public class ExchangeRateService {
                 getCurrencyDtoById(savedExchangeRate.getBaseCurrencyId()),
                 getCurrencyDtoById(savedExchangeRate.getTargetCurrencyId()),
                 savedExchangeRate.getRate());
-
-
     }
 
 
@@ -85,4 +83,7 @@ public class ExchangeRateService {
                 getCurrencyDtoById(updatedExchangeRate.getTargetCurrencyId()),
                 updatedExchangeRate.getRate());
     }
+
+
+//    public ExchangeRateDto
 }

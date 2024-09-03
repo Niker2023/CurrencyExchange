@@ -1,6 +1,7 @@
 package org.petproject.servlet;
 
 import com.google.gson.Gson;
+import com.google.common.base.Splitter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,8 +11,11 @@ import org.petproject.dto.ExchangeRateDto;
 import org.petproject.service.CurrencyService;
 import org.petproject.service.ExchangeRateService;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Map;
 
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends HttpServlet {
@@ -67,7 +71,14 @@ public class ExchangeRateServlet extends HttpServlet {
         var currencyService = CurrencyService.getInstance();
         var exchangeRateService = ExchangeRateService.getInstance();
 
-        var rate = req.getParameter("rate");
+        BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
+
+        String line = br.readLine();
+        Map<String, String> result = Splitter.on("&")
+                .withKeyValueSeparator("=")
+                .split(line);
+
+        var rate = result.get("rate");
 
         var exchangeRateDto = new ExchangeRateDto(0,
                 currencyService.getByCode(baseCurrency),
