@@ -2,8 +2,6 @@ package org.petproject.dto;
 
 import lombok.Value;
 
-import java.math.BigDecimal;
-
 @Value
 public class ExchangeRateDto {
 

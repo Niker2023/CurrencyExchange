@@ -3,6 +3,7 @@ package org.petproject.service;
 import org.petproject.dao.CurrencyDao;
 import org.petproject.dao.ExchangeRateDao;
 import org.petproject.dto.CurrencyDto;
+import org.petproject.dto.ExchangeAmountDto;
 import org.petproject.dto.ExchangeRateDto;
 import org.petproject.entity.Currency;
 import org.petproject.entity.ExchangeRate;
@@ -85,5 +86,7 @@ public class ExchangeRateService {
     }
 
 
-//    public ExchangeRateDto
+    public ExchangeAmountDto exchangeAmount(ExchangeAmountDto exchangeAmountDto) {
+        return null;
+    }
 }
