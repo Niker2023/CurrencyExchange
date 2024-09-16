@@ -57,7 +57,11 @@ public class ExchangeRateDao  {
             preparedStatement.setInt(2, targetCurrencyId);
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            return Optional.of(new ExchangeRate(resultSet.getInt("id"),
+            var id = resultSet.getInt("id");
+            if (resultSet.wasNull()) {
+              return Optional.empty();
+            }
+            return Optional.of(new ExchangeRate(resultSet.getInt(id),
                     resultSet.getInt("BaseCurrencyId"),
                     resultSet.getInt("TargetCurrencyId"),
                     resultSet.getDouble("Rate")));

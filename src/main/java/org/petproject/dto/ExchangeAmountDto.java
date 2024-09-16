@@ -5,9 +5,10 @@ import lombok.Value;
 @Value
 public class ExchangeAmountDto {
 
-    String baseCurrency;
-    String targetCurrency;
-    double amount;
+    CurrencyDto baseCurrency;
+    CurrencyDto targetCurrency;
+    double exchangeRate;
+    double exchangeAmount;
     double convertedAmount;
 
 }
