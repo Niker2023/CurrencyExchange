@@ -12,37 +12,13 @@ public class CurrencyDao {
 
     private static final CurrencyDao INSTANCE = new CurrencyDao();
 
-    private final String FIND_LAST_INSERT = """
-                    SELECT *
-                    FROM Currencies
-                    ORDER BY id DESC
-                    LIMIT 1
-                    """;
-
-    private final String INSERT_CURRENCY = """
-                INSERT INTO CURRENCIES(Code, FullName, Sign)
-                VALUES (?, ?, ?)
-                """;
-
-    private final String FIND_ALL = """
-                SELECT *
-                FROM CURRENCIES
-                """;
-
-    private final String FIND_BY_CODE = """
-            SELECT *
-            FROM CURRENCIES
-            WHERE Code = ?
-            """;
-
-    private final String FIND_BY_ID = """
-            SELECT *
-            FROM CURRENCIES
-            WHERE id = ?
-            """;
-
 
     public Optional<Currency> getByCode(String code) {
+        String FIND_BY_CODE = """
+                SELECT *
+                FROM CURRENCIES
+                WHERE Code = ?
+                """;
         try
                 (
                         var connection = ConnectionManager.get();
@@ -61,6 +37,11 @@ public class CurrencyDao {
 
 
     public Optional<Currency> getById(int id) {
+        String FIND_BY_ID = """
+                SELECT *
+                FROM CURRENCIES
+                WHERE id = ?
+                """;
         try
                 (
                         var connection = ConnectionManager.get();
@@ -89,6 +70,10 @@ public class CurrencyDao {
 
 
     public List<Currency> getAll() {
+        String FIND_ALL = """
+                SELECT *
+                FROM CURRENCIES
+                """;
         try
                 (
                         var connection = ConnectionManager.get();
@@ -110,6 +95,10 @@ public class CurrencyDao {
 
     public Currency save(Currency currency) {
 
+        String INSERT_CURRENCY = """
+                INSERT INTO CURRENCIES(Code, FullName, Sign)
+                VALUES (?, ?, ?)
+                """;
         try
                 (
                         var connection = ConnectionManager.get();
@@ -121,6 +110,12 @@ public class CurrencyDao {
             preparedStatement.setString(3, currency.getSign());
             preparedStatement.executeUpdate();
 
+            String FIND_LAST_INSERT = """
+                    SELECT *
+                    FROM Currencies
+                    ORDER BY id DESC
+                    LIMIT 1
+                    """;
             var resultSet = connection.prepareStatement(FIND_LAST_INSERT).executeQuery();
             resultSet.next();
             return new Currency(resultSet.getInt("id"), resultSet.getString("FullName"),

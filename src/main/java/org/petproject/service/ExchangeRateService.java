@@ -64,12 +64,15 @@ public class ExchangeRateService {
                 exchangeRateDto.getRate());
 
         var savedExchangeRate = exchangeRateDao.save(exchangeRate);
-
-        return new ExchangeRateDto(savedExchangeRate.getId(),
-                getCurrencyDtoById(savedExchangeRate.getBaseCurrencyId()),
-                getCurrencyDtoById(savedExchangeRate.getTargetCurrencyId()),
-                savedExchangeRate.getRate());
+        if (savedExchangeRate.isPresent()) {
+            return new ExchangeRateDto(savedExchangeRate.get().getId(),
+                    getCurrencyDtoById(savedExchangeRate.get().getBaseCurrencyId()),
+                    getCurrencyDtoById(savedExchangeRate.get().getTargetCurrencyId()),
+                    savedExchangeRate.get().getRate());
+        }
+        return null;
     }
+
 
 
     public ExchangeRateDto update(ExchangeRateDto exchangeRateDto) {
@@ -127,7 +130,6 @@ public class ExchangeRateService {
                     exchangeRateTargetToBase.get().getRate(),
                     exchangeAmountDto.getExchangeAmount(),
                     1 / exchangeRateTargetToBase.get().getRate() * exchangeAmountDto.getExchangeAmount()));
-
         }
         return result;
     }
@@ -142,9 +144,9 @@ public class ExchangeRateService {
         if (exchangeRateUsdToBase.isPresent() && exchangeRateUsdToTarget.isPresent()) {
             result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
                     exchangeAmountDto.getTargetCurrency(),
-                    1 / exchangeRateUsdToBase.get().getRate() * exchangeRateUsdToTarget.get().getRate(),
+                    1/exchangeRateUsdToBase.get().getRate() * exchangeRateUsdToTarget.get().getRate(),
                     exchangeAmountDto.getExchangeAmount(),
-                    1 / exchangeRateUsdToBase.get().getRate() * exchangeRateUsdToTarget.get().getRate() *
+                    1/exchangeRateUsdToBase.get().getRate() * exchangeRateUsdToTarget.get().getRate() *
                             exchangeAmountDto.getExchangeAmount()));
         }
         return result;

@@ -1,6 +1,5 @@
 package org.petproject.dao;
 
-import org.petproject.entity.Currency;
 import org.petproject.entity.ExchangeRate;
 import org.petproject.util.ConnectionManager;
 
@@ -14,43 +13,28 @@ public class ExchangeRateDao  {
 
     private static final ExchangeRateDao INSTANCE = new ExchangeRateDao();
 
-    private final String FIND_ALL = """
-            SELECT *
-            FROM ExchangeRates
-            """;
 
-    private final String FIND_BY_CODES = """
-            SELECT *
-            FROM ExchangeRates
-            WHERE BaseCurrencyId = ?
-            AND TargetCurrencyId = ?
-            """;
+    private ExchangeRateDao() {}
 
-    private final String INSERT_EXCHANGE_RATE = """
-            INSERT INTO ExchangeRates(BaseCurrencyId, TargetCurrencyId, Rate)
-            VALUES (?, ?, ?)
-            """;
 
-    private final String FIND_LAST_INSERT = """
-                    SELECT *
-                    FROM ExchangeRates
-                    ORDER BY id DESC
-                    LIMIT 1
-                    """;
-
-    private final String UPDATE_RATE = """
-            UPDATE ExchangeRates
-            SET Rate = ?
-            WHERE BaseCurrencyId = ?
-            AND TargetCurrencyId = ?
-            """;
+    public static ExchangeRateDao getInstance() {
+        return INSTANCE;
+    }
 
 
     public Optional<ExchangeRate> getByIds(int baseCurrencyId, int targetCurrencyId) {
+
+        String FIND_BY_CODES = """
+                SELECT *
+                FROM ExchangeRates
+                WHERE BaseCurrencyId = ?
+                AND TargetCurrencyId = ?
+                """;
+
         try
                 (
                         var connection = ConnectionManager.get();
-                        var preparedStatement = connection.prepareStatement(FIND_BY_CODES);
+                        var preparedStatement = connection.prepareStatement(FIND_BY_CODES)
                 )
         {
             preparedStatement.setInt(1, baseCurrencyId);
@@ -71,19 +55,80 @@ public class ExchangeRateDao  {
     }
 
 
-    private ExchangeRateDao() {}
+    public Optional<ExchangeRate> save(ExchangeRate exchangeRate) {
+        String INSERT_EXCHANGE_RATE = """
+                INSERT INTO ExchangeRates(BaseCurrencyId, TargetCurrencyId, Rate)
+                VALUES (?, ?, ?)
+                """;
+        try
+                (
+                        var connection = ConnectionManager.get();
+                        var preparedStatement = connection.prepareStatement(INSERT_EXCHANGE_RATE)
+                )
+        {
+            preparedStatement.setInt(1, exchangeRate.getBaseCurrencyId());
+            preparedStatement.setInt(2, exchangeRate.getTargetCurrencyId());
+            preparedStatement.setDouble(3, exchangeRate.getRate());
+            preparedStatement.executeUpdate();
+
+            String FIND_LAST_INSERT = """
+                    SELECT *
+                    FROM ExchangeRates
+                    ORDER BY id DESC
+                    LIMIT 1
+                    """;
+            var resultSet = connection.prepareStatement(FIND_LAST_INSERT).executeQuery();
+            resultSet.next();
+            var id = resultSet.getInt("id");
+            if (resultSet.wasNull()) {
+                return Optional.empty();
+            }
+            return Optional.of(new ExchangeRate(resultSet.getInt(id),
+                    resultSet.getInt("BaseCurrencyId"),
+                    resultSet.getInt("TargetCurrencyId"),
+                    resultSet.getDouble("Rate")));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
-    public static ExchangeRateDao getInstance() {
-        return INSTANCE;
+    public ExchangeRate update(ExchangeRate exchangeRate) {
+
+        String UPDATE_RATE = """
+                UPDATE ExchangeRates
+                SET Rate = ?
+                WHERE BaseCurrencyId = ?
+                AND TargetCurrencyId = ?
+                """;
+
+        try
+                (
+                        var connection = ConnectionManager.get();
+                        var preparedStatement = connection.prepareStatement(UPDATE_RATE)
+                )
+        {
+            preparedStatement.setDouble(1, exchangeRate.getRate());
+            preparedStatement.setInt(2, exchangeRate.getBaseCurrencyId());
+            preparedStatement.setInt(3, exchangeRate.getTargetCurrencyId());
+            preparedStatement.executeUpdate();
+            return getByIds(exchangeRate.getBaseCurrencyId(), exchangeRate.getTargetCurrencyId()).get();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 
     public List<ExchangeRate> getAll() {
+        String FIND_ALL = """
+                SELECT *
+                FROM ExchangeRates
+                """;
         try
                 (
                         var connection = ConnectionManager.get();
-                        var preparedStatement = connection.prepareStatement(FIND_ALL);
+                        var preparedStatement = connection.prepareStatement(FIND_ALL)
                 )
         {
             var resultSet = preparedStatement.executeQuery();
@@ -100,46 +145,5 @@ public class ExchangeRateDao  {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    public ExchangeRate save(ExchangeRate exchangeRate) {
-        try
-                (
-                        var connection = ConnectionManager.get();
-                        var preparedStatement = connection.prepareStatement(INSERT_EXCHANGE_RATE);
-                )
-        {
-            preparedStatement.setInt(1, exchangeRate.getBaseCurrencyId());
-            preparedStatement.setInt(2, exchangeRate.getTargetCurrencyId());
-            preparedStatement.setDouble(3, exchangeRate.getRate());
-            preparedStatement.executeUpdate();
-
-            var resultSet = connection.prepareStatement(FIND_LAST_INSERT).executeQuery();
-            resultSet.next();
-            return new ExchangeRate(resultSet.getInt("id"), resultSet.getInt("BaseCurrencyId"),
-                    resultSet.getInt("TargetCurrencyId"), resultSet.getDouble("Rate"));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public ExchangeRate update(ExchangeRate exchangeRate) {
-        try
-                (
-                        var connection = ConnectionManager.get();
-                        var preparedStatement = connection.prepareStatement(UPDATE_RATE);
-                )
-        {
-            preparedStatement.setDouble(1, exchangeRate.getRate());
-            preparedStatement.setInt(2, exchangeRate.getBaseCurrencyId());
-            preparedStatement.setInt(3, exchangeRate.getTargetCurrencyId());
-            preparedStatement.executeUpdate();
-            return getByIds(exchangeRate.getBaseCurrencyId(), exchangeRate.getTargetCurrencyId()).get();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 }
