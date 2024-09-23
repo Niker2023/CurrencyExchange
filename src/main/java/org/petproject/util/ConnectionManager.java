@@ -6,8 +6,8 @@ import java.sql.SQLException;
 
 public final class ConnectionManager {
 
-//    private static final String PATH_TO_DB = "/home/niker/IdeaProjects/CurrencyExchange/currency.db";
-    private static final String PATH_TO_DB = "/home/nikita/IdeaProjects/CurrencyExchange/currency.db";
+    private static final String PATH_TO_DB = "/home/niker/IdeaProjects/CurrencyExchange/currency.db";
+//    private static final String PATH_TO_DB = "/home/nikita/IdeaProjects/CurrencyExchange/currency.db";
 
     static {
         loadDriver();
@@ -25,11 +25,11 @@ public final class ConnectionManager {
     private ConnectionManager() {
     }
 
-    public static Connection get() {
+    public static Connection get() throws SQLException {
         try {
             return DriverManager.getConnection("jdbc:sqlite:" + PATH_TO_DB);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 }

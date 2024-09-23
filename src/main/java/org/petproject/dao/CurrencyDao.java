@@ -69,7 +69,7 @@ public class CurrencyDao {
     }
 
 
-    public List<Currency> getAll() {
+    public List<Currency> getAll() throws SQLException {
         String FIND_ALL = """
                 SELECT *
                 FROM CURRENCIES
@@ -87,8 +87,6 @@ public class CurrencyDao {
                 currencies.add(new Currency(rs.getInt("id"), rs.getString("Code"), rs.getString("FullName"), rs.getString("Sign")));
             }
             return currencies;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
