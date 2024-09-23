@@ -1,9 +1,10 @@
 package org.petproject.service;
 
 import org.petproject.dao.CurrencyDao;
-import org.petproject.dto.CurrencyDto;
+import org.petproject.entity.dto.CurrencyDto;
 import org.petproject.entity.Currency;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,15 +21,15 @@ public class CurrencyService {
     private CurrencyService() {}
 
 
-    public List<CurrencyDto> findAll() {
-        return currencyDao.getAll().stream()
-                .map(currency -> new CurrencyDto(
-                        currency.getId(),
-                        currency.getCode(),
-                        currency.getName(),
-                        currency.getSign()
-                ))
-                .collect(Collectors.toList());
+    public List<CurrencyDto> findAll() throws SQLException {
+            return currencyDao.getAll().stream()
+                    .map(currency -> new CurrencyDto(
+                            currency.getId(),
+                            currency.getCode(),
+                            currency.getName(),
+                            currency.getSign()
+                    ))
+                    .collect(Collectors.toList());
     }
 
 

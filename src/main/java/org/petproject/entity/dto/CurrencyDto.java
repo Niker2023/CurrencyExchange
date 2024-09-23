@@ -1,4 +1,4 @@
-package org.petproject.dto;
+package org.petproject.entity.dto;
 
 import lombok.Value;
 
