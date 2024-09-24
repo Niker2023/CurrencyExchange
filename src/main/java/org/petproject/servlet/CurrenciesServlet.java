@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.petproject.entity.dto.CurrencyDto;
+import org.petproject.dto.CurrencyDto;
 import org.petproject.entity.ErrorResponse;
 import org.petproject.service.CurrencyService;
 

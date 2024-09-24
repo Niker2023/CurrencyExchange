@@ -2,9 +2,9 @@ package org.petproject.service;
 
 import org.petproject.dao.CurrencyDao;
 import org.petproject.dao.ExchangeRateDao;
-import org.petproject.entity.dto.CurrencyDto;
-import org.petproject.entity.dto.ExchangeAmountDto;
-import org.petproject.entity.dto.ExchangeRateDto;
+import org.petproject.dto.CurrencyDto;
+import org.petproject.dto.ExchangeAmountDto;
+import org.petproject.dto.ExchangeRateDto;
 import org.petproject.entity.Currency;
 import org.petproject.entity.ExchangeRate;
 

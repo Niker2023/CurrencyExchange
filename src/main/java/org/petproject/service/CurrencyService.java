@@ -1,7 +1,7 @@
 package org.petproject.service;
 
 import org.petproject.dao.CurrencyDao;
-import org.petproject.entity.dto.CurrencyDto;
+import org.petproject.dto.CurrencyDto;
 import org.petproject.entity.Currency;
 
 import java.sql.SQLException;
