@@ -22,7 +22,7 @@ public class CurrencyDao {
         try
                 (
                         var connection = ConnectionManager.get();
-                        var preparedStatement = connection.prepareStatement(FIND_BY_CODE);
+                        var preparedStatement = connection.prepareStatement(FIND_BY_CODE)
                 )
         {
             preparedStatement.setString(1, code);
@@ -45,7 +45,7 @@ public class CurrencyDao {
         try
                 (
                         var connection = ConnectionManager.get();
-                        var preparedStatement = connection.prepareStatement(FIND_BY_ID);
+                        var preparedStatement = connection.prepareStatement(FIND_BY_ID)
                 )
         {
             preparedStatement.setInt(1, id);
@@ -77,7 +77,7 @@ public class CurrencyDao {
         try
                 (
                         var connection = ConnectionManager.get();
-                        var preparedStatement = connection.prepareStatement(FIND_ALL);
+                        var preparedStatement = connection.prepareStatement(FIND_ALL)
                 )
         {
             var rs = preparedStatement.executeQuery();
@@ -100,7 +100,7 @@ public class CurrencyDao {
         try
                 (
                         var connection = ConnectionManager.get();
-                        var preparedStatement = connection.prepareStatement(INSERT_CURRENCY);
+                        var preparedStatement = connection.prepareStatement(INSERT_CURRENCY)
                 )
         {
             preparedStatement.setString(1, currency.getCode());
