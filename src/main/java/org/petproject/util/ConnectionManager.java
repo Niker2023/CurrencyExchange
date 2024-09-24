@@ -6,8 +6,8 @@ import java.sql.SQLException;
 
 public final class ConnectionManager {
 
-//    private static final String PATH_TO_DB = "/home/nikita/IdeaProjects/CurrencyExchange/currency.db";
-    private static final String PATH_TO_DB = "/home/currency.db";
+    private static final String PATH_TO_DB = "/home/nikita/IdeaProjects/CurrencyExchange/currency.db";
+//    private static final String PATH_TO_DB = "/home/currency.db";
 
     static {
         loadDriver();

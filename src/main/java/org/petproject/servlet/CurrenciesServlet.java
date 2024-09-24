@@ -28,11 +28,7 @@ public class CurrenciesServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             jsonString = gson.toJson(new ErrorResponse("The database is unavailable."));
         } finally {
-            PrintWriter out = resp.getWriter();
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
-            out.print(jsonString);
-            out.flush();
+            resp.getWriter().write(jsonString);
         }
     }
 
