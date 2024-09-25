@@ -6,6 +6,7 @@ import org.petproject.entity.Currency;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CurrencyService {
@@ -34,17 +35,18 @@ public class CurrencyService {
 
 
     public CurrencyDto save(CurrencyDto currencyDto) throws SQLException {
-        var curreny = new Currency(currencyDto.getId(), currencyDto.getCode(), currencyDto.getName(), currencyDto.getSign());
-        var saved = currencyDao.save(curreny);
+        var currency = new Currency(currencyDto.getId(), currencyDto.getCode(), currencyDto.getName(), currencyDto.getSign());
+        var saved = currencyDao.save(currency);
         return new CurrencyDto(saved.getId(), saved.getCode(), saved.getName(), saved.getSign());
     }
 
 
-    public CurrencyDto getByCode(String code) {
-        var byCode = currencyDao.getByCode(code);
-        var currentCurrency = byCode.get();
-        return new CurrencyDto(currentCurrency.getId(), currentCurrency.getName(), currentCurrency.getCode(), currentCurrency.getSign());
+    public Optional<CurrencyDto> getByCode(String code) throws SQLException {
+        var currencyByCode = currencyDao.getByCode(code);
+        if (currencyByCode.isPresent()) {
+            var currentCurrency = currencyByCode.get();
+            return Optional.of(new CurrencyDto(currentCurrency.getId(), currentCurrency.getName(), currentCurrency.getCode(), currentCurrency.getSign()));
+        }
+        return Optional.empty();
     }
-
-
 }
