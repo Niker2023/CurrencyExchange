@@ -41,7 +41,7 @@ public class CurrenciesServlet extends HttpServlet {
 
         if (name == null || name.isBlank() ||
                 sign == null || sign.isBlank() ||
-                !DataValidator.currencyCodeValidate(code)) {
+                DataValidator.isCurrencyCodeNotValid(code)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write(gson.toJson(new ErrorResponse("The required form field is missing or incorrect.")));
             return;

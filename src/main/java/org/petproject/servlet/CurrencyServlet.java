@@ -22,7 +22,7 @@ public class CurrencyServlet extends HttpServlet {
 
         var codeString = req.getPathInfo().substring(1);
 
-        if (!DataValidator.currencyCodeValidate(codeString)) {
+        if (DataValidator.isCurrencyCodeNotValid(codeString)) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().write(gson.toJson(new ErrorResponse("The currency code is missing from the address or is incorrect.")));
         }
