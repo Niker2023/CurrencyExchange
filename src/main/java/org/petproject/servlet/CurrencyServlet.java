@@ -5,32 +5,40 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.petproject.entity.ErrorResponse;
 import org.petproject.service.CurrencyService;
+import org.petproject.util.DataValidator;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.SQLException;
 
 
 @WebServlet("/currency/*")
 public class CurrencyServlet extends HttpServlet {
+    Gson gson = new Gson();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        var reqPathInfo = req.getPathInfo();
-        var codeString = reqPathInfo.substring(1);
+        var codeString = req.getPathInfo().substring(1);
 
-        if (codeString.length() != 3) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        if (!DataValidator.currencyCodeValidate(codeString)) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("The currency code is missing from the address or is incorrect.")));
         }
 
-        Gson gson = new Gson();
-        var currencyService = CurrencyService.getInstance();
-        var jsonString = gson.toJson(currencyService.getByCode(codeString));
-        PrintWriter out = resp.getWriter();
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        out.print(jsonString);
-        out.flush();
+        try {
+            var currencyService = CurrencyService.getInstance();
+            var currencyByCode = currencyService.getByCode(codeString);
+            if (currencyByCode.isPresent()) {
+                resp.getWriter().write(gson.toJson(currencyByCode.get()));
+            } else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.getWriter().write(gson.toJson(new ErrorResponse("The currency was not found.")));
+            }
+        } catch (SQLException exception) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
+        }
     }
 }
