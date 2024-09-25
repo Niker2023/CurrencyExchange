@@ -120,7 +120,7 @@ public class ExchangeRateDao  {
     }
 
 
-    public List<ExchangeRate> getAll() {
+    public List<ExchangeRate> getAll() throws SQLException {
         String FIND_ALL = """
                 SELECT *
                 FROM ExchangeRates
@@ -143,7 +143,7 @@ public class ExchangeRateDao  {
 
             return exchangeRates;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 }

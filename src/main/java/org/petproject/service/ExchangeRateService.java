@@ -8,6 +8,7 @@ import org.petproject.dto.ExchangeRateDto;
 import org.petproject.entity.Currency;
 import org.petproject.entity.ExchangeRate;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class ExchangeRateService {
     private ExchangeRateService() {
     }
 
-    public List<ExchangeRateDto> findAll() {
+    public List<ExchangeRateDto> findAll() throws SQLException {
         return exchangeRateDao.getAll().stream()
                 .map(exchangeRate -> new ExchangeRateDto(
                         exchangeRate.getId(),
@@ -45,7 +46,7 @@ public class ExchangeRateService {
     }
 
 
-    public ExchangeRateDto findByCodes(String baseCurrencyCode, String targetCurrencyCode) {
+    public ExchangeRateDto findByCodes(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
         Currency baseCurrency = currencyDao.getByCode(baseCurrencyCode).get();
         Currency targetCurrency = currencyDao.getByCode(targetCurrencyCode).get();
         Optional<ExchangeRate> exchangeRate = exchangeRateDao.getByIds(baseCurrency.getId(), targetCurrency.getId());
@@ -57,7 +58,7 @@ public class ExchangeRateService {
     }
 
 
-    public ExchangeRateDto save(ExchangeRateDto exchangeRateDto) {
+    public ExchangeRateDto save(ExchangeRateDto exchangeRateDto) throws SQLException {
         var exchangeRate = new ExchangeRate(exchangeRateDto.getId(),
                 exchangeRateDto.getBaseCurrency().getId(),
                 exchangeRateDto.getTargetCurrency().getId(),
