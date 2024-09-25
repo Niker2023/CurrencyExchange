@@ -91,7 +91,7 @@ public class ExchangeRateService {
     }
 
 
-    public Optional<ExchangeAmountDto> exchangeAmount(ExchangeAmountDto exchangeAmountDto) {
+    public Optional<ExchangeAmountDto> exchangeAmount(ExchangeAmountDto exchangeAmountDto) throws SQLException{
 
         Optional<ExchangeAmountDto> result;
         if ((result = exchangeRateBaseToTarget(exchangeAmountDto)).isPresent()) {
@@ -135,7 +135,7 @@ public class ExchangeRateService {
         return result;
     }
 
-    private Optional<ExchangeAmountDto> exchangeViaUsd(ExchangeAmountDto exchangeAmountDto) {
+    private Optional<ExchangeAmountDto> exchangeViaUsd(ExchangeAmountDto exchangeAmountDto) throws SQLException{
         Optional<ExchangeAmountDto> result = Optional.empty();
         var usd = currencyDao.getByCode("USD").get();
         var exchangeRateUsdToBase = exchangeRateDao.getByIds(usd.getId(),
