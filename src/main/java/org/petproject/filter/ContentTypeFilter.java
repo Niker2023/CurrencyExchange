@@ -6,7 +6,8 @@ import jakarta.servlet.annotation.WebFilter;
 import java.io.IOException;
 
 @WebFilter(urlPatterns = "/*")
-public class PreprocessingFilter implements Filter {
+public class ContentTypeFilter implements Filter {
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
@@ -15,6 +16,5 @@ public class PreprocessingFilter implements Filter {
         servletResponse.setContentType("application/json");
 
         filterChain.doFilter(servletRequest, servletResponse);
-
     }
 }
