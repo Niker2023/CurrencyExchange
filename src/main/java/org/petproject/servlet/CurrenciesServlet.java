@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.petproject.dto.CurrencyDto;
 import org.petproject.entity.ErrorResponse;
 import org.petproject.service.CurrencyService;
+import org.petproject.util.DataValidator;
 import org.sqlite.SQLiteException;
 
 import java.io.IOException;
@@ -39,10 +40,10 @@ public class CurrenciesServlet extends HttpServlet {
         var sign = req.getParameter("sign");
 
         if (name == null || name.isBlank() ||
-                code == null || code.isBlank() ||
-                sign == null || sign.isBlank()) {
+                sign == null || sign.isBlank() ||
+                !DataValidator.currencyCodeValidate(code)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write(gson.toJson(new ErrorResponse("The required form field is missing or blank")));
+            resp.getWriter().write(gson.toJson(new ErrorResponse("The required form field is missing or incorrect.")));
             return;
         }
 
