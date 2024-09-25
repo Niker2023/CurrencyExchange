@@ -13,7 +13,7 @@ public class CurrencyDao {
     private static final CurrencyDao INSTANCE = new CurrencyDao();
 
 
-    public Optional<Currency> getByCode(String code) {
+    public Optional<Currency> getByCode(String code) throws SQLException {
         String FIND_BY_CODE = """
                 SELECT *
                 FROM CURRENCIES
@@ -31,7 +31,7 @@ public class CurrencyDao {
 
             return Optional.of(new Currency(resultSet.getInt("id"), resultSet.getString("FullName"), resultSet.getString("Code"), resultSet.getString("Sign")));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 
