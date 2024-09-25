@@ -93,7 +93,7 @@ public class ExchangeRateDao  {
     }
 
 
-    public ExchangeRate update(ExchangeRate exchangeRate) {
+    public Optional<ExchangeRate> update(ExchangeRate exchangeRate) throws SQLException {
 
         String UPDATE_RATE = """
                 UPDATE ExchangeRates
@@ -112,11 +112,10 @@ public class ExchangeRateDao  {
             preparedStatement.setInt(2, exchangeRate.getBaseCurrencyId());
             preparedStatement.setInt(3, exchangeRate.getTargetCurrencyId());
             preparedStatement.executeUpdate();
-            return getByIds(exchangeRate.getBaseCurrencyId(), exchangeRate.getTargetCurrencyId()).get();
+            return getByIds(exchangeRate.getBaseCurrencyId(), exchangeRate.getTargetCurrencyId());
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
-
     }
 
 

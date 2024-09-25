@@ -25,18 +25,13 @@ public class ExchangeServlet extends HttpServlet {
         Gson gson = new Gson();
         var exchangeRateService = ExchangeRateService.getInstance();
         CurrencyService currencyService = CurrencyService.getInstance();
-        var exchangeAmountDto = new ExchangeAmountDto(currencyService.getByCode(baseCurrencyCode),
-                currencyService.getByCode(targetCurrencyCode),
-                0,
-                Double.parseDouble(amount),
-                0);
-        var result = exchangeRateService.exchangeAmount(exchangeAmountDto);
-        var jsonString = gson.toJson(result);
-        PrintWriter out = resp.getWriter();
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        out.print(jsonString);
-        out.flush();
+//        var exchangeAmountDto = new ExchangeAmountDto(currencyService.getByCode(baseCurrencyCode),
+//                currencyService.getByCode(targetCurrencyCode),
+//                0,
+//                Double.parseDouble(amount),
+//                0);
+//        var result = exchangeRateService.exchangeAmount(exchangeAmountDto);
+//        var jsonString = gson.toJson(result);
     }
 
 }

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.petproject.dto.ExchangeRateDto;
+import org.petproject.entity.ErrorResponse;
 import org.petproject.service.CurrencyService;
 import org.petproject.service.ExchangeRateService;
 import org.petproject.util.DataValidator;
@@ -15,7 +16,6 @@ import org.petproject.util.DataValidator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -25,23 +25,28 @@ public class ExchangeRateServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
         var codeString = req.getPathInfo().substring(1);
 
         if (DataValidator.isCurrenciesCodesNotValid(codeString)) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("The currency codes of the pair are missing in the address.")));
+            return;
         }
 
         String baseCurrency = codeString.substring(0, 3);
         String targetCurrency = codeString.substring(3, 6);
 
-
-
-        var exchangeRateService = ExchangeRateService.getInstance();
         try {
-            var jsonString = gson.toJson(exchangeRateService.findByCodes(baseCurrency, targetCurrency));
-        } catch (SQLException e) {
-
+            var optionalExchangeRateDto = ExchangeRateService.getInstance().findByCodes(baseCurrency, targetCurrency);
+            if (optionalExchangeRateDto.isPresent()) {
+                resp.getWriter().write(gson.toJson(optionalExchangeRateDto.get()));
+            } else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.getWriter().write(gson.toJson(new ErrorResponse("The exchange rate for the pair was not found.")));
+            }
+        } catch (SQLException exception) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
         }
     }
 
@@ -56,11 +61,18 @@ public class ExchangeRateServlet extends HttpServlet {
     }
 
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
+        Map<String, String> result = Splitter.on("&")
+                .withKeyValueSeparator("=")
+                .split(br.readLine());
+        var rate = result.get("rate");
 
         var codeString = req.getPathInfo().substring(1);
 
-        if (codeString.length() != 6) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        if (DataValidator.isCurrenciesCodesNotValid(codeString) || DataValidator.isExchangeRateNotValid(rate)) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("The required form field is missing.")));
+            return;
         }
 
         String baseCurrency = codeString.substring(0, 3);
@@ -69,24 +81,27 @@ public class ExchangeRateServlet extends HttpServlet {
         var currencyService = CurrencyService.getInstance();
         var exchangeRateService = ExchangeRateService.getInstance();
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
-
-        String line = br.readLine();
-        Map<String, String> result = Splitter.on("&")
-                .withKeyValueSeparator("=")
-                .split(line);
-
-        var rate = result.get("rate");
-
         try {
-            var exchangeRateDto = new ExchangeRateDto(0,
-                    currencyService.getByCode(baseCurrency).get(),
-                    currencyService.getByCode(targetCurrency).get(),
-                    Double.parseDouble(rate));
-            var saved = exchangeRateService.update(exchangeRateDto);
+            var optionalBaseCurrencyDto = currencyService.getByCode(baseCurrency);
+            var optionalTargetCurrencyDto = currencyService.getByCode(targetCurrency);
+            ExchangeRateDto exchangeRateDto;
+            if (optionalBaseCurrencyDto.isPresent() && optionalTargetCurrencyDto.isPresent()) {
+                exchangeRateDto = new ExchangeRateDto(0,
+                        optionalBaseCurrencyDto.get(),
+                        optionalTargetCurrencyDto.get(),
+                        Double.parseDouble(rate));
 
-        } catch (SQLException e) {
+                var saved = exchangeRateService.update(exchangeRateDto);
+                if (saved.isPresent()) {
+                    resp.getWriter().write(gson.toJson(saved.get()));
+                    return;
+                }
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("The currency pair is missing from the database.")));
+            }
+        } catch (SQLException exception) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
         }
-
     }
 }

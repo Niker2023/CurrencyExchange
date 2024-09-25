@@ -5,16 +5,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.petproject.dto.CurrencyDto;
 import org.petproject.dto.ExchangeRateDto;
 import org.petproject.entity.ErrorResponse;
 import org.petproject.service.CurrencyService;
 import org.petproject.service.ExchangeRateService;
 import org.petproject.util.DataValidator;
+import org.sqlite.SQLiteException;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Optional;
 
 @WebServlet("/exchangeRates")
 public class ExchangeRatesServlet extends HttpServlet {
@@ -49,38 +48,32 @@ public class ExchangeRatesServlet extends HttpServlet {
             resp.getWriter().write(gson.toJson(new ErrorResponse("The required form field is missing or incorrect.")));
             return;
         }
-
-        Optional<ExchangeRateDto> exchangeRateDto = Optional.empty();
+        ExchangeRateDto exchangeRateDto;
 
         try {
             var optionalBaseCurrencyDto = currencyService.getByCode(baseCurrencyCode);
             var optionalTargetCurrencyDto = currencyService.getByCode(targetCurrencyCode);
             if (optionalBaseCurrencyDto.isPresent() && optionalTargetCurrencyDto.isPresent()) {
-                var baseCurrencyDTO = optionalBaseCurrencyDto.get();
-                var targetCurrencyDTO = optionalTargetCurrencyDto.get();
-                exchangeRateDto = Optional.of(new ExchangeRateDto(0,
-                        targetCurrencyDTO,
-                        baseCurrencyDTO,
-                        Double.parseDouble(rate)));
-            } else {
-                // exception
+                exchangeRateDto = new ExchangeRateDto(0,
+                        optionalBaseCurrencyDto.get(),
+                        optionalTargetCurrencyDto.get(),
+                        Double.parseDouble(rate));
+                var saved = exchangeRateService.save(exchangeRateDto);
+                if (saved.isPresent()) {
+                    resp.getWriter().write(gson.toJson(saved.get()));
+                    return;
+                }
             }
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("One (or both) currency from the currency pair does not exist in the database.")));
         } catch (SQLException exception) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
-            return;
-        }
-
-        try {
-            if (exchangeRateDto.isPresent()) {
-                var saved = exchangeRateService.save(exchangeRateDto.get());
+            if (((SQLiteException) exception.getCause()).getResultCode().name().equals("SQLITE_CONSTRAINT_UNIQUE")) {
+                resp.setStatus(HttpServletResponse.SC_CONFLICT);
+                resp.getWriter().write(gson.toJson(new ErrorResponse("A currency pair with this code already exists.")));
             } else {
-                // exception
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
             }
-
-        } catch (SQLException exception) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
         }
     }
 }

@@ -46,37 +46,41 @@ public class ExchangeRateService {
     }
 
 
-    public ExchangeRateDto findByCodes(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
-        Currency baseCurrency = currencyDao.getByCode(baseCurrencyCode).get();
-        Currency targetCurrency = currencyDao.getByCode(targetCurrencyCode).get();
-        Optional<ExchangeRate> exchangeRate = exchangeRateDao.getByIds(baseCurrency.getId(), targetCurrency.getId());
+    public Optional<ExchangeRateDto> findByCodes(String baseCurrencyCode, String targetCurrencyCode) throws SQLException {
+        var baseCurrencyByCode = currencyDao.getByCode(baseCurrencyCode);
+        var targetCurrencyByCode = currencyDao.getByCode(targetCurrencyCode);
 
-        return exchangeRate.map(rate -> new ExchangeRateDto(rate.getId(),
-                new CurrencyDto(baseCurrency.getId(), baseCurrency.getName(), baseCurrency.getCode(), baseCurrency.getSign()),
-                new CurrencyDto(targetCurrency.getId(), targetCurrency.getName(), targetCurrency.getCode(), targetCurrency.getSign()),
-                rate.getRate())).orElse(null);
+        if (baseCurrencyByCode.isPresent() && targetCurrencyByCode.isPresent()) {
+            var baseCurrency = baseCurrencyByCode.get();
+            var targetCurrency = targetCurrencyByCode.get();
+            Optional<ExchangeRate> exchangeRate = exchangeRateDao.getByIds(baseCurrency.getId(), targetCurrency.getId());
+            if (exchangeRate.isPresent()) {
+                return exchangeRate.map(rate -> new ExchangeRateDto(rate.getId(),
+                        new CurrencyDto(baseCurrency.getId(), baseCurrency.getName(), baseCurrency.getCode(), baseCurrency.getSign()),
+                        new CurrencyDto(targetCurrency.getId(), targetCurrency.getName(), targetCurrency.getCode(), targetCurrency.getSign()),
+                        rate.getRate()));
+            }
+        }
+        return Optional.empty();
     }
 
 
-    public ExchangeRateDto save(ExchangeRateDto exchangeRateDto) throws SQLException {
+    public Optional<ExchangeRateDto> save(ExchangeRateDto exchangeRateDto) throws SQLException {
         var exchangeRate = new ExchangeRate(exchangeRateDto.getId(),
                 exchangeRateDto.getBaseCurrency().getId(),
                 exchangeRateDto.getTargetCurrency().getId(),
                 exchangeRateDto.getRate());
 
         var savedExchangeRate = exchangeRateDao.save(exchangeRate);
-        if (savedExchangeRate.isPresent()) {
-            return new ExchangeRateDto(savedExchangeRate.get().getId(),
-                    getCurrencyDtoById(savedExchangeRate.get().getBaseCurrencyId()),
-                    getCurrencyDtoById(savedExchangeRate.get().getTargetCurrencyId()),
-                    savedExchangeRate.get().getRate());
-        }
-        return null;
+        return savedExchangeRate.map(rate -> new ExchangeRateDto(rate.getId(),
+                getCurrencyDtoById(rate.getBaseCurrencyId()),
+                getCurrencyDtoById(rate.getTargetCurrencyId()),
+                rate.getRate()));
     }
 
 
 
-    public ExchangeRateDto update(ExchangeRateDto exchangeRateDto) {
+    public Optional<ExchangeRateDto> update(ExchangeRateDto exchangeRateDto) throws SQLException{
         var exchangeRate = new ExchangeRate(exchangeRateDto.getId(),
                 exchangeRateDto.getBaseCurrency().getId(),
                 exchangeRateDto.getTargetCurrency().getId(),
@@ -84,10 +88,10 @@ public class ExchangeRateService {
 
         var updatedExchangeRate = exchangeRateDao.update(exchangeRate);
 
-        return new ExchangeRateDto(updatedExchangeRate.getId(),
-                getCurrencyDtoById(updatedExchangeRate.getBaseCurrencyId()),
-                getCurrencyDtoById(updatedExchangeRate.getTargetCurrencyId()),
-                updatedExchangeRate.getRate());
+        return updatedExchangeRate.map(rate -> new ExchangeRateDto(rate.getId(),
+                getCurrencyDtoById(rate.getBaseCurrencyId()),
+                getCurrencyDtoById(rate.getTargetCurrencyId()),
+                rate.getRate()));
     }
 
 
