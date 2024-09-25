@@ -70,6 +70,7 @@ public class CurrencyDao {
 
 
     public List<Currency> getAll() throws SQLException {
+
         String FIND_ALL = """
                 SELECT *
                 FROM CURRENCIES
@@ -84,14 +85,15 @@ public class CurrencyDao {
             List<Currency> currencies = new ArrayList<>();
             while(rs.next())
             {
-                currencies.add(new Currency(rs.getInt("id"), rs.getString("Code"), rs.getString("FullName"), rs.getString("Sign")));
+                currencies.add(new Currency(rs.getInt("id"), rs.getString("Code"),
+                        rs.getString("FullName"), rs.getString("Sign")));
             }
             return currencies;
         }
     }
 
 
-    public Currency save(Currency currency) {
+    public Currency save(Currency currency) throws SQLException {
 
         String INSERT_CURRENCY = """
                 INSERT INTO CURRENCIES(Code, FullName, Sign)
@@ -119,7 +121,7 @@ public class CurrencyDao {
             return new Currency(resultSet.getInt("id"), resultSet.getString("FullName"),
                     resultSet.getString("Code"), resultSet.getString("Sign"));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 

@@ -33,7 +33,7 @@ public class CurrencyService {
     }
 
 
-    public CurrencyDto save(CurrencyDto currencyDto) {
+    public CurrencyDto save(CurrencyDto currencyDto) throws SQLException {
         var curreny = new Currency(currencyDto.getId(), currencyDto.getCode(), currencyDto.getName(), currencyDto.getSign());
         var saved = currencyDao.save(curreny);
         return new CurrencyDto(saved.getId(), saved.getCode(), saved.getName(), saved.getSign());

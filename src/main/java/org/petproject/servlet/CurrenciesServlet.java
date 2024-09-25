@@ -8,9 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.petproject.dto.CurrencyDto;
 import org.petproject.entity.ErrorResponse;
 import org.petproject.service.CurrencyService;
+import org.sqlite.SQLiteException;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 
 @WebServlet("/currencies")
@@ -20,15 +20,13 @@ public class CurrenciesServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String jsonString = "";
+
         try {
             var currencyDtoList = CurrencyService.getInstance().findAll();
-            jsonString = gson.toJson(currencyDtoList);
+            resp.getWriter().write(gson.toJson(currencyDtoList));
         } catch (SQLException exception) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            jsonString = gson.toJson(new ErrorResponse("The database is unavailable."));
-        } finally {
-            resp.getWriter().write(jsonString);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
         }
     }
 
@@ -40,15 +38,27 @@ public class CurrenciesServlet extends HttpServlet {
         var code = req.getParameter("code");
         var sign = req.getParameter("sign");
 
+        if (name == null || name.isBlank() ||
+                code == null || code.isBlank() ||
+                sign == null || sign.isBlank()) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("The required form field is missing or blank")));
+            return;
+        }
+
         var currencyDto = new CurrencyDto(0, name, code, sign);
-        var currentCurrency = CurrencyService.getInstance().save(currencyDto);
 
-        PrintWriter out = resp.getWriter();
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-
-        var jsonString = gson.toJson(currentCurrency);
-        out.print(jsonString);
-        out.flush();
+        try {
+            var currentCurrency = CurrencyService.getInstance().save(currencyDto);
+            resp.getWriter().write(gson.toJson(currentCurrency));
+        } catch (SQLException exception) {
+            if (((SQLiteException) exception.getCause()).getResultCode().name().equals("SQLITE_CONSTRAINT_UNIQUE")) {
+                resp.setStatus(HttpServletResponse.SC_CONFLICT);
+                resp.getWriter().write(gson.toJson(new ErrorResponse("A currency with this code already exists.")));
+            } else {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
+            }
+        }
     }
 }
