@@ -13,6 +13,14 @@ public class CurrencyDao {
     private static final CurrencyDao INSTANCE = new CurrencyDao();
 
 
+    private CurrencyDao(){}
+
+
+    public static CurrencyDao getInstance() {
+        return INSTANCE;
+    }
+
+
     public Optional<Currency> getByCode(String code) throws SQLException {
         String FIND_BY_CODE = """
                 SELECT *
@@ -28,8 +36,10 @@ public class CurrencyDao {
             preparedStatement.setString(1, code);
             var resultSet = preparedStatement.executeQuery();
             resultSet.next();
-
-            return Optional.of(new Currency(resultSet.getInt("id"), resultSet.getString("FullName"), resultSet.getString("Code"), resultSet.getString("Sign")));
+            return Optional.of(new Currency(resultSet.getInt("id"),
+                    resultSet.getString("FullName"),
+                    resultSet.getString("Code"),
+                    resultSet.getString("Sign")));
         } catch (SQLException e) {
             throw new SQLException(e);
         }
@@ -61,16 +71,7 @@ public class CurrencyDao {
     }
 
 
-    private CurrencyDao(){}
-
-
-    public static CurrencyDao getInstance() {
-        return INSTANCE;
-    }
-
-
     public List<Currency> getAll() throws SQLException {
-
         String FIND_ALL = """
                 SELECT *
                 FROM CURRENCIES
@@ -94,7 +95,6 @@ public class CurrencyDao {
 
 
     public Currency save(Currency currency) throws SQLException {
-
         String INSERT_CURRENCY = """
                 INSERT INTO CURRENCIES(Code, FullName, Sign)
                 VALUES (?, ?, ?)
@@ -124,5 +124,4 @@ public class CurrencyDao {
             throw new SQLException(e);
         }
     }
-
 }
