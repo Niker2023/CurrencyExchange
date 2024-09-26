@@ -5,8 +5,9 @@ import org.petproject.dao.ExchangeRateDao;
 import org.petproject.dto.CurrencyDto;
 import org.petproject.dto.ExchangeAmountDto;
 import org.petproject.dto.ExchangeRateDto;
-import org.petproject.entity.Currency;
 import org.petproject.entity.ExchangeRate;
+import org.petproject.mapper.DtoToExchangeRateMapper;
+import org.petproject.mapper.ExchangeRateToDtoMapper;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -25,24 +26,14 @@ public class ExchangeRateService {
         return INSTANCE;
     }
 
+
     private ExchangeRateService() {
     }
 
     public List<ExchangeRateDto> findAll() throws SQLException {
         return exchangeRateDao.getAll().stream()
-                .map(exchangeRate -> new ExchangeRateDto(
-                        exchangeRate.getId(),
-                        getCurrencyDtoById(exchangeRate.getBaseCurrencyId()),
-                        getCurrencyDtoById(exchangeRate.getTargetCurrencyId()),
-                        exchangeRate.getRate()
-                ))
+                .map(ExchangeRateToDtoMapper.INSTANCE::toExchangeRateDto)
                 .collect(Collectors.toList());
-    }
-
-
-    private CurrencyDto getCurrencyDtoById(int id) {
-        Currency currency = currencyDao.getById(id).get();
-        return new CurrencyDto(currency.getId(), currency.getName(), currency.getCode(), currency.getSign());
     }
 
 
@@ -66,37 +57,19 @@ public class ExchangeRateService {
 
 
     public Optional<ExchangeRateDto> save(ExchangeRateDto exchangeRateDto) throws SQLException {
-        var exchangeRate = new ExchangeRate(exchangeRateDto.getId(),
-                exchangeRateDto.getBaseCurrency().getId(),
-                exchangeRateDto.getTargetCurrency().getId(),
-                exchangeRateDto.getRate());
-
+        var exchangeRate = DtoToExchangeRateMapper.INSTANCE.toExchangeRate(exchangeRateDto);
         var savedExchangeRate = exchangeRateDao.save(exchangeRate);
-        return savedExchangeRate.map(rate -> new ExchangeRateDto(rate.getId(),
-                getCurrencyDtoById(rate.getBaseCurrencyId()),
-                getCurrencyDtoById(rate.getTargetCurrencyId()),
-                rate.getRate()));
+        return savedExchangeRate.map(ExchangeRateToDtoMapper.INSTANCE::toExchangeRateDto);
     }
 
 
-
-    public Optional<ExchangeRateDto> update(ExchangeRateDto exchangeRateDto) throws SQLException{
-        var exchangeRate = new ExchangeRate(exchangeRateDto.getId(),
-                exchangeRateDto.getBaseCurrency().getId(),
-                exchangeRateDto.getTargetCurrency().getId(),
-                exchangeRateDto.getRate());
-
+    public Optional<ExchangeRateDto> update(ExchangeRateDto exchangeRateDto) throws SQLException {
+        var exchangeRate = DtoToExchangeRateMapper.INSTANCE.toExchangeRate(exchangeRateDto);
         var updatedExchangeRate = exchangeRateDao.update(exchangeRate);
-
-        return updatedExchangeRate.map(rate -> new ExchangeRateDto(rate.getId(),
-                getCurrencyDtoById(rate.getBaseCurrencyId()),
-                getCurrencyDtoById(rate.getTargetCurrencyId()),
-                rate.getRate()));
+        return updatedExchangeRate.map(ExchangeRateToDtoMapper.INSTANCE::toExchangeRateDto);
     }
-
 
     public Optional<ExchangeAmountDto> exchangeAmount(ExchangeAmountDto exchangeAmountDto) throws SQLException{
-
         Optional<ExchangeAmountDto> result;
         if ((result = exchangeRateBaseToTarget(exchangeAmountDto)).isPresent()) {
             return result;
