@@ -2,7 +2,8 @@ package org.petproject.service;
 
 import org.petproject.dao.CurrencyDao;
 import org.petproject.dto.CurrencyDto;
-import org.petproject.entity.Currency;
+import org.petproject.mapper.DtoToCurrencyMapper;
+import org.petproject.mapper.CurrencyToDtoMapper;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -24,20 +25,15 @@ public class CurrencyService {
 
     public List<CurrencyDto> findAll() throws SQLException {
             return currencyDao.getAll().stream()
-                    .map(currency -> new CurrencyDto(
-                            currency.getId(),
-                            currency.getCode(),
-                            currency.getName(),
-                            currency.getSign()
-                    ))
+                    .map(CurrencyToDtoMapper.INSTANCE::toDto)
                     .collect(Collectors.toList());
     }
 
 
     public CurrencyDto save(CurrencyDto currencyDto) throws SQLException {
-        var currency = new Currency(currencyDto.getId(), currencyDto.getCode(), currencyDto.getName(), currencyDto.getSign());
+        var currency = DtoToCurrencyMapper.INSTANCE.toCurrency(currencyDto);
         var saved = currencyDao.save(currency);
-        return new CurrencyDto(saved.getId(), saved.getCode(), saved.getName(), saved.getSign());
+        return CurrencyToDtoMapper.INSTANCE.toDto(saved);
     }
 
 
@@ -45,7 +41,7 @@ public class CurrencyService {
         var currencyByCode = currencyDao.getByCode(code);
         if (currencyByCode.isPresent()) {
             var currentCurrency = currencyByCode.get();
-            return Optional.of(new CurrencyDto(currentCurrency.getId(), currentCurrency.getName(), currentCurrency.getCode(), currentCurrency.getSign()));
+            return Optional.of(CurrencyToDtoMapper.INSTANCE.toDto(currentCurrency));
         }
         return Optional.empty();
     }
