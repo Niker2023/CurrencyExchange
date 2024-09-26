@@ -2,6 +2,7 @@ package org.petproject.service;
 
 import org.petproject.dao.CurrencyDao;
 import org.petproject.dto.CurrencyDto;
+import org.petproject.entity.Currency;
 import org.petproject.mapper.DtoToCurrencyMapper;
 import org.petproject.mapper.CurrencyToDtoMapper;
 
@@ -34,6 +35,12 @@ public class CurrencyService {
         var currency = DtoToCurrencyMapper.INSTANCE.toCurrency(currencyDto);
         var saved = currencyDao.save(currency);
         return CurrencyToDtoMapper.INSTANCE.toDto(saved);
+    }
+
+
+    private Optional<CurrencyDto> getCurrencyDtoById(int id) {
+        Optional<Currency> currency = currencyDao.getById(id);
+        return currency.map(CurrencyToDtoMapper.INSTANCE::toDto);
     }
 
 
