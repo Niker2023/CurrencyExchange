@@ -46,7 +46,7 @@ public class CurrencyDao {
     }
 
 
-    public Optional<Currency> getById(int id) {
+    public Optional<Currency> getById(int id) throws SQLException {
         String FIND_BY_ID = """
                 SELECT *
                 FROM CURRENCIES
@@ -66,7 +66,7 @@ public class CurrencyDao {
                     resultSet.getString("Code"),
                     resultSet.getString("Sign")));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 
