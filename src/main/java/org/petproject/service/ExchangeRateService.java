@@ -6,13 +6,12 @@ import org.petproject.dto.CurrencyDto;
 import org.petproject.dto.ExchangeAmountDto;
 import org.petproject.dto.ExchangeRateDto;
 import org.petproject.entity.ExchangeRate;
-import org.petproject.mapper.DtoToExchangeRateMapper;
-import org.petproject.mapper.ExchangeRateToDtoMapper;
+import org.petproject.mapper.ExchangeRateMapper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ExchangeRateService {
 
@@ -31,9 +30,12 @@ public class ExchangeRateService {
     }
 
     public List<ExchangeRateDto> findAll() throws SQLException {
-        return exchangeRateDao.getAll().stream()
-                .map(ExchangeRateToDtoMapper.INSTANCE::toExchangeRateDto)
-                .collect(Collectors.toList());
+            List<ExchangeRateDto> collect = new ArrayList<>();
+            for (ExchangeRate exchangeRate : exchangeRateDao.getAll()) {
+                ExchangeRateDto exchangeRateDto = ExchangeRateMapper.INSTANCE.toExchangeRateDto(exchangeRate);
+                collect.add(exchangeRateDto);
+            }
+        return collect;
     }
 
 
@@ -57,19 +59,30 @@ public class ExchangeRateService {
 
 
     public Optional<ExchangeRateDto> save(ExchangeRateDto exchangeRateDto) throws SQLException {
-        var exchangeRate = DtoToExchangeRateMapper.INSTANCE.toExchangeRate(exchangeRateDto);
+        var exchangeRate = ExchangeRateMapper.INSTANCE.toExchangeRate(exchangeRateDto);
         var savedExchangeRate = exchangeRateDao.save(exchangeRate);
-        return savedExchangeRate.map(ExchangeRateToDtoMapper.INSTANCE::toExchangeRateDto);
+        if (savedExchangeRate.isPresent()) {
+            var rateDto = ExchangeRateMapper.INSTANCE.toExchangeRateDto(savedExchangeRate.get());
+            return Optional.of(rateDto);
+        }
+        return Optional.empty();
     }
 
 
     public Optional<ExchangeRateDto> update(ExchangeRateDto exchangeRateDto) throws SQLException {
-        var exchangeRate = DtoToExchangeRateMapper.INSTANCE.toExchangeRate(exchangeRateDto);
+        var exchangeRate = new ExchangeRate(exchangeRateDto.getId(),
+                exchangeRateDto.getBaseCurrency().getId(),
+                exchangeRateDto.getTargetCurrency().getId(),
+                exchangeRateDto.getRate());
         var updatedExchangeRate = exchangeRateDao.update(exchangeRate);
-        return updatedExchangeRate.map(ExchangeRateToDtoMapper.INSTANCE::toExchangeRateDto);
+        if (updatedExchangeRate.isPresent()) {
+            var rateDto = ExchangeRateMapper.INSTANCE.toExchangeRateDto(updatedExchangeRate.get());
+            return Optional.of(rateDto);
+        }
+        return Optional.empty();
     }
 
-    public Optional<ExchangeAmountDto> exchangeAmount(ExchangeAmountDto exchangeAmountDto) throws SQLException{
+    public Optional<ExchangeAmountDto> exchangeAmount(ExchangeAmountDto exchangeAmountDto) throws SQLException {
         Optional<ExchangeAmountDto> result;
         if ((result = exchangeRateBaseToTarget(exchangeAmountDto)).isPresent()) {
             return result;
@@ -81,7 +94,7 @@ public class ExchangeRateService {
         return result;
     }
 
-    private Optional<ExchangeAmountDto> exchangeRateBaseToTarget(ExchangeAmountDto exchangeAmountDto) {
+    private Optional<ExchangeAmountDto> exchangeRateBaseToTarget(ExchangeAmountDto exchangeAmountDto) throws SQLException {
         Optional<ExchangeAmountDto> result = Optional.empty();
         var exchangeRateBaseToTarget = exchangeRateDao.getByIds(
                 exchangeAmountDto.getBaseCurrency().getId(),
@@ -97,7 +110,7 @@ public class ExchangeRateService {
     }
 
 
-    private Optional<ExchangeAmountDto> exchangeRateTargetToBase(ExchangeAmountDto exchangeAmountDto) {
+    private Optional<ExchangeAmountDto> exchangeRateTargetToBase(ExchangeAmountDto exchangeAmountDto) throws SQLException {
         Optional<ExchangeAmountDto> result = Optional.empty();
         var exchangeRateTargetToBase = exchangeRateDao.getByIds(
                 exchangeAmountDto.getTargetCurrency().getId(),
