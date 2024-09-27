@@ -37,7 +37,7 @@ public class CurrencyService {
     }
 
 
-    public Optional<CurrencyDto> getCurrencyDtoById(int id) {
+    public Optional<CurrencyDto> getCurrencyDtoById(int id) throws SQLException {
         Optional<Currency> currency = currencyDao.getById(id);
         return currency.map(CurrencyMapper.INSTANCE::toDto);
     }
