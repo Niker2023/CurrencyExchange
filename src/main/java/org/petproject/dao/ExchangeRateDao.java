@@ -22,7 +22,7 @@ public class ExchangeRateDao  {
     }
 
 
-    public Optional<ExchangeRate> getByIds(int baseCurrencyId, int targetCurrencyId) {
+    public Optional<ExchangeRate> getByIds(int baseCurrencyId, int targetCurrencyId) throws SQLException {
 
         String FIND_BY_CODES = """
                 SELECT *
@@ -45,17 +45,17 @@ public class ExchangeRateDao  {
             if (resultSet.wasNull()) {
               return Optional.empty();
             }
-            return Optional.of(new ExchangeRate(resultSet.getInt(id),
+            return Optional.of(new ExchangeRate(id,
                     resultSet.getInt("BaseCurrencyId"),
                     resultSet.getInt("TargetCurrencyId"),
                     resultSet.getDouble("Rate")));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 
 
-    public Optional<ExchangeRate> save(ExchangeRate exchangeRate) {
+    public Optional<ExchangeRate> save(ExchangeRate exchangeRate) throws SQLException {
         String INSERT_EXCHANGE_RATE = """
                 INSERT INTO ExchangeRates(BaseCurrencyId, TargetCurrencyId, Rate)
                 VALUES (?, ?, ?)
@@ -83,12 +83,12 @@ public class ExchangeRateDao  {
             if (resultSet.wasNull()) {
                 return Optional.empty();
             }
-            return Optional.of(new ExchangeRate(resultSet.getInt(id),
+            return Optional.of(new ExchangeRate(id,
                     resultSet.getInt("BaseCurrencyId"),
                     resultSet.getInt("TargetCurrencyId"),
                     resultSet.getDouble("Rate")));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new SQLException(e);
         }
     }
 
