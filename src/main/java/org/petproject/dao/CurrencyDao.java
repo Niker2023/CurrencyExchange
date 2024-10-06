@@ -35,11 +35,14 @@ public class CurrencyDao {
         {
             preparedStatement.setString(1, code);
             var resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            return Optional.of(new Currency(resultSet.getInt("id"),
-                    resultSet.getString("FullName"),
-                    resultSet.getString("Code"),
-                    resultSet.getString("Sign")));
+            if (resultSet.next()) {
+                return Optional.of(new Currency(resultSet.getInt("id"),
+                        resultSet.getString("FullName"),
+                        resultSet.getString("Code"),
+                        resultSet.getString("Sign")));
+            } else {
+                return Optional.empty();
+            }
         } catch (SQLException e) {
             throw new SQLException(e);
         }
@@ -60,11 +63,14 @@ public class CurrencyDao {
         {
             preparedStatement.setInt(1, id);
             var resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            return Optional.of(new Currency(resultSet.getInt("id"),
-                    resultSet.getString("FullName"),
-                    resultSet.getString("Code"),
-                    resultSet.getString("Sign")));
+            if (resultSet.next()) {
+                return Optional.of(new Currency(resultSet.getInt("id"),
+                        resultSet.getString("FullName"),
+                        resultSet.getString("Code"),
+                        resultSet.getString("Sign")));
+            } else {
+                return Optional.empty();
+            }
         } catch (SQLException e) {
             throw new SQLException(e);
         }
