@@ -25,6 +25,7 @@ public class CurrencyServlet extends HttpServlet {
         if (DataValidator.isCurrencyCodeNotValid(codeString)) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().write(gson.toJson(new ErrorResponse("The currency code is missing from the address or is incorrect.")));
+            return;
         }
 
         try {
