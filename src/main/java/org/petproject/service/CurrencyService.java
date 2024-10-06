@@ -24,9 +24,9 @@ public class CurrencyService {
 
 
     public List<CurrencyDto> findAll() throws SQLException {
-            return currencyDao.getAll().stream()
-                    .map(CurrencyMapper.INSTANCE::toDto)
-                    .collect(Collectors.toList());
+        return currencyDao.getAll().stream()
+                .map(CurrencyMapper.INSTANCE::toDto)
+                .collect(Collectors.toList());
     }
 
 
