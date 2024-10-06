@@ -53,9 +53,11 @@ public class CurrenciesServlet extends HttpServlet {
             var currentCurrency = CurrencyService.getInstance().save(currencyDto);
             resp.getWriter().write(gson.toJson(currentCurrency));
         } catch (SQLException exception) {
-            if (((SQLiteException) exception.getCause()).getResultCode().name().equals("SQLITE_CONSTRAINT_UNIQUE")) {
-                resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                resp.getWriter().write(gson.toJson(new ErrorResponse("A currency with this code already exists.")));
+            if (exception instanceof SQLiteException) {
+                if (((SQLiteException) exception.getCause()).getResultCode().name().equals("SQLITE_CONSTRAINT_UNIQUE")) {
+                    resp.setStatus(HttpServletResponse.SC_CONFLICT);
+                    resp.getWriter().write(gson.toJson(new ErrorResponse("A currency with this code already exists.")));
+                }
             } else {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
