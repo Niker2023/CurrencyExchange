@@ -48,7 +48,7 @@ public class ExchangeServlet extends HttpServlet {
                 }
             }
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            resp.getWriter().write(gson.toJson(new ErrorResponse("The exchange rate for the pair was not found.")));
+            resp.getWriter().write(gson.toJson(new ErrorResponse("None of the options for calculating the exchange rate is available due to the absence of the desired currency pair in the database.")));
         } catch (SQLException exception) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
