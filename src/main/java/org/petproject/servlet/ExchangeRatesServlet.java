@@ -26,8 +26,13 @@ public class ExchangeRatesServlet extends HttpServlet {
             ExchangeRateService exchangeRateService = ExchangeRateService.getInstance();
             resp.getWriter().write(gson.toJson(exchangeRateService.findAll()));
         } catch (SQLException exception) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
+            if (exception.getMessage().equals("ExchangeRateMapper: currency not found")) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().write(gson.toJson(new ErrorResponse("The exchange rate refers to a currency that is not in the database.")));
+            } else {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
+            }
         }
     }
 
@@ -60,6 +65,7 @@ public class ExchangeRatesServlet extends HttpServlet {
                         Double.parseDouble(rate));
                 var saved = exchangeRateService.save(exchangeRateDto);
                 if (saved.isPresent()) {
+                    resp.setStatus(HttpServletResponse.SC_CREATED);
                     resp.getWriter().write(gson.toJson(saved.get()));
                     return;
                 }
@@ -67,7 +73,7 @@ public class ExchangeRatesServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().write(gson.toJson(new ErrorResponse("One (or both) currency from the currency pair does not exist in the database.")));
         } catch (SQLException exception) {
-            if (((SQLiteException) exception.getCause()).getResultCode().name().equals("SQLITE_CONSTRAINT_UNIQUE")) {
+            if (exception.getMessage().equals("org.sqlite.SQLiteException: [SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: ExchangeRates.BaseCurrencyId, ExchangeRates.TargetCurrencyId)")) {
                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
                 resp.getWriter().write(gson.toJson(new ErrorResponse("A currency pair with this code already exists.")));
             } else {
@@ -77,3 +83,4 @@ public class ExchangeRatesServlet extends HttpServlet {
         }
     }
 }
+
