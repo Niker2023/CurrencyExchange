@@ -2,10 +2,10 @@ package org.petproject.service;
 
 import org.petproject.dao.CurrencyDao;
 import org.petproject.dao.ExchangeRateDao;
-import org.petproject.dto.CurrencyDto;
 import org.petproject.dto.ExchangeAmountDto;
 import org.petproject.dto.ExchangeRateDto;
 import org.petproject.entity.ExchangeRate;
+import org.petproject.mapper.CurrencyMapper;
 import org.petproject.mapper.ExchangeRateMapper;
 
 import java.sql.SQLException;
@@ -49,8 +49,8 @@ public class ExchangeRateService {
             Optional<ExchangeRate> exchangeRate = exchangeRateDao.getByIds(baseCurrency.getId(), targetCurrency.getId());
             if (exchangeRate.isPresent()) {
                 return exchangeRate.map(rate -> new ExchangeRateDto(rate.getId(),
-                        new CurrencyDto(baseCurrency.getId(), baseCurrency.getName(), baseCurrency.getCode(), baseCurrency.getSign()),
-                        new CurrencyDto(targetCurrency.getId(), targetCurrency.getName(), targetCurrency.getCode(), targetCurrency.getSign()),
+                        CurrencyMapper.INSTANCE.toDto(baseCurrency),
+                        CurrencyMapper.INSTANCE.toDto(targetCurrency),
                         rate.getRate()));
             }
         }
@@ -118,7 +118,7 @@ public class ExchangeRateService {
         if (exchangeRateTargetToBase.isPresent()) {
             result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
                     exchangeAmountDto.getTargetCurrency(),
-                    exchangeRateTargetToBase.get().getRate(),
+                    1 / exchangeRateTargetToBase.get().getRate(),
                     exchangeAmountDto.getExchangeAmount(),
                     1 / exchangeRateTargetToBase.get().getRate() * exchangeAmountDto.getExchangeAmount()));
         }
@@ -127,17 +127,20 @@ public class ExchangeRateService {
 
     private Optional<ExchangeAmountDto> exchangeViaUsd(ExchangeAmountDto exchangeAmountDto) throws SQLException{
         Optional<ExchangeAmountDto> result = Optional.empty();
-        var usd = currencyDao.getByCode("USD").get();
-        var exchangeRateUsdToBase = exchangeRateDao.getByIds(usd.getId(),
+        var usd = currencyDao.getByCode("USD");
+        if (usd.isEmpty()) {
+            return result;
+        }
+        var exchangeRateUsdToBase = exchangeRateDao.getByIds(usd.get().getId(),
                 exchangeAmountDto.getBaseCurrency().getId());
-        var exchangeRateUsdToTarget = exchangeRateDao.getByIds(usd.getId(),
+        var exchangeRateUsdToTarget = exchangeRateDao.getByIds(usd.get().getId(),
                 exchangeAmountDto.getTargetCurrency().getId());
         if (exchangeRateUsdToBase.isPresent() && exchangeRateUsdToTarget.isPresent()) {
             result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
                     exchangeAmountDto.getTargetCurrency(),
-                    1/exchangeRateUsdToBase.get().getRate() * exchangeRateUsdToTarget.get().getRate(),
+                    1 / exchangeRateUsdToBase.get().getRate() * exchangeRateUsdToTarget.get().getRate(),
                     exchangeAmountDto.getExchangeAmount(),
-                    1/exchangeRateUsdToBase.get().getRate() * exchangeRateUsdToTarget.get().getRate() *
+                    1 / exchangeRateUsdToBase.get().getRate() * exchangeRateUsdToTarget.get().getRate() *
                             exchangeAmountDto.getExchangeAmount()));
         }
         return result;
