@@ -10,7 +10,6 @@ import org.petproject.entity.ErrorResponse;
 import org.petproject.service.CurrencyService;
 import org.petproject.service.ExchangeRateService;
 import org.petproject.util.DataValidator;
-import org.sqlite.SQLiteException;
 
 import java.io.IOException;
 import java.sql.SQLException;
