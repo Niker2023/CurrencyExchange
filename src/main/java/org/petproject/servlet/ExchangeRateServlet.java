@@ -23,6 +23,7 @@ import java.util.Map;
 public class ExchangeRateServlet extends HttpServlet {
     Gson gson = new Gson();
 
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         var codeString = req.getPathInfo().substring(1);
@@ -56,20 +57,19 @@ public class ExchangeRateServlet extends HttpServlet {
         String method = req.getMethod();
         if (!method.equals("PATCH")) {
             super.service(req, resp);
+        } else {
+            this.doPatch(req, resp);
         }
-        this.doPatch(req, resp);
     }
+
 
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
-        Map<String, String> result = Splitter.on("&")
-                .withKeyValueSeparator("=")
-                .split(br.readLine());
-        var rate = result.get("rate");
-
+        String rate;
         var codeString = req.getPathInfo().substring(1);
 
-        if (DataValidator.isCurrenciesCodesNotValid(codeString) || DataValidator.isExchangeRateNotValid(rate)) {
+        if (!br.ready() || DataValidator.isExchangeRateNotValid(rate = getRateFromBufferedReader(br))
+                || DataValidator.isCurrenciesCodesNotValid(codeString)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write(gson.toJson(new ErrorResponse("The required form field is missing.")));
             return;
@@ -103,5 +103,13 @@ public class ExchangeRateServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().write(gson.toJson(new ErrorResponse("The database is unavailable.")));
         }
+    }
+
+
+    private String getRateFromBufferedReader(BufferedReader br) throws IOException {
+        Map<String, String> result = Splitter.on("&")
+                .withKeyValueSeparator("=")
+                .split(br.readLine());
+        return result.get("rate");
     }
 }
