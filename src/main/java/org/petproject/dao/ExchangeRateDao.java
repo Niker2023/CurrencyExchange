@@ -40,18 +40,24 @@ public class ExchangeRateDao  {
             preparedStatement.setInt(1, baseCurrencyId);
             preparedStatement.setInt(2, targetCurrencyId);
             ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
+            return getExchangeRate(resultSet);
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+    }
+
+    private Optional<ExchangeRate> getExchangeRate(ResultSet resultSet) throws SQLException {
+        if (resultSet.next()) {
             var id = resultSet.getInt("id");
             if (resultSet.wasNull()) {
-              return Optional.empty();
+                return Optional.empty();
             }
             return Optional.of(new ExchangeRate(id,
                     resultSet.getInt("BaseCurrencyId"),
                     resultSet.getInt("TargetCurrencyId"),
                     resultSet.getDouble("Rate")));
-        } catch (SQLException e) {
-            throw new SQLException(e);
-        }
+            }
+        return Optional.empty();
     }
 
 
@@ -78,15 +84,7 @@ public class ExchangeRateDao  {
                     LIMIT 1
                     """;
             var resultSet = connection.prepareStatement(FIND_LAST_INSERT).executeQuery();
-            resultSet.next();
-            var id = resultSet.getInt("id");
-            if (resultSet.wasNull()) {
-                return Optional.empty();
-            }
-            return Optional.of(new ExchangeRate(id,
-                    resultSet.getInt("BaseCurrencyId"),
-                    resultSet.getInt("TargetCurrencyId"),
-                    resultSet.getDouble("Rate")));
+            return getExchangeRate(resultSet);
         } catch (SQLException e) {
             throw new SQLException(e);
         }
