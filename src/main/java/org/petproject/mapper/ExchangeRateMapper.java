@@ -26,17 +26,17 @@ public interface ExchangeRateMapper {
 
 
     @Named("getCurrencyIdByCurrency")
-    public static int getCurrencyIdByCurrency(CurrencyDto currency) {
+    static int getCurrencyIdByCurrency(CurrencyDto currency) {
         return currency.getId();
     }
 
 
     @Named("getCurrencyDtoById")
-    public static CurrencyDto getCurrencyDtoById(int id) throws SQLException {
-        var currencyDtoById = CurrencyService.getInstance().getCurrencyDtoById(id);
-        if (currencyDtoById.isPresent()) {
-            return currencyDtoById.get();
+    static CurrencyDto getCurrencyDtoById(int id) throws SQLException {
+        var currencyDto = CurrencyService.getInstance().getCurrencyDtoById(id);
+        if (currencyDto.isPresent()) {
+            return currencyDto.get();
         }
-        throw new SQLException("Currency not found");
+        throw new SQLException("ExchangeRateMapper: currency not found");
     }
 }
