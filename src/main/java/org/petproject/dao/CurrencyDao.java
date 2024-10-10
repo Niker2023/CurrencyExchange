@@ -43,8 +43,6 @@ public class CurrencyDao {
             } else {
                 return Optional.empty();
             }
-        } catch (SQLException e) {
-            throw new SQLException(e);
         }
     }
 
@@ -71,8 +69,6 @@ public class CurrencyDao {
             } else {
                 return Optional.empty();
             }
-        } catch (SQLException e) {
-            throw new SQLException(e);
         }
     }
 
@@ -126,8 +122,6 @@ public class CurrencyDao {
             resultSet.next();
             return new Currency(resultSet.getInt("id"), resultSet.getString("FullName"),
                     resultSet.getString("Code"), resultSet.getString("Sign"));
-        } catch (SQLException e) {
-            throw new SQLException(e);
         }
     }
 }

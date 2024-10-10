@@ -41,8 +41,6 @@ public class ExchangeRateDao  {
             preparedStatement.setInt(2, targetCurrencyId);
             ResultSet resultSet = preparedStatement.executeQuery();
             return getExchangeRate(resultSet);
-        } catch (SQLException e) {
-            throw new SQLException(e);
         }
     }
 
@@ -85,8 +83,6 @@ public class ExchangeRateDao  {
                     """;
             var resultSet = connection.prepareStatement(FIND_LAST_INSERT).executeQuery();
             return getExchangeRate(resultSet);
-        } catch (SQLException e) {
-            throw new SQLException(e);
         }
     }
 
@@ -139,8 +135,6 @@ public class ExchangeRateDao  {
             }
 
             return exchangeRates;
-        } catch (SQLException e) {
-            throw new SQLException(e);
         }
     }
 }
