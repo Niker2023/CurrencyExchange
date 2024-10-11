@@ -8,7 +8,11 @@ import org.petproject.entity.ExchangeRate;
 import org.petproject.mapper.CurrencyMapper;
 import org.petproject.mapper.ExchangeRateMapper;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +24,8 @@ public class ExchangeRateService {
     private final ExchangeRateDao exchangeRateDao = ExchangeRateDao.getInstance();
 
     private final CurrencyDao currencyDao = CurrencyDao.getInstance();
+
+    private final DecimalFormat decimalAmountFormat = new DecimalFormat("#0.00");
 
     public static ExchangeRateService getInstance() {
         return INSTANCE;
@@ -82,6 +88,7 @@ public class ExchangeRateService {
         return Optional.empty();
     }
 
+
     public Optional<ExchangeAmountDto> exchangeAmount(ExchangeAmountDto exchangeAmountDto) throws SQLException {
         Optional<ExchangeAmountDto> result;
         if ((result = exchangeRateBaseToTarget(exchangeAmountDto)).isPresent()) {
@@ -94,17 +101,26 @@ public class ExchangeRateService {
         return result;
     }
 
+
     private Optional<ExchangeAmountDto> exchangeRateBaseToTarget(ExchangeAmountDto exchangeAmountDto) throws SQLException {
+        decimalAmountFormat.setParseBigDecimal(true);
         Optional<ExchangeAmountDto> result = Optional.empty();
         var exchangeRateBaseToTarget = exchangeRateDao.getByIds(
                 exchangeAmountDto.getBaseCurrency().getId(),
                 exchangeAmountDto.getTargetCurrency().getId());
         if (exchangeRateBaseToTarget.isPresent()) {
-            result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
-                    exchangeAmountDto.getTargetCurrency(),
-                    exchangeAmountDto.getExchangeAmount(),
-                    exchangeRateBaseToTarget.get().getRate(),
-                    exchangeRateBaseToTarget.get().getRate() * exchangeAmountDto.getExchangeAmount()));
+            try {
+                var exchangeRate = BigDecimal.valueOf(exchangeRateBaseToTarget.get().getRate());
+                var exchangeAmount = (BigDecimal) decimalAmountFormat.parse(exchangeAmountDto.getExchangeAmount());
+                var convertedAmount = exchangeRate.multiply(exchangeAmount);
+                result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
+                        exchangeAmountDto.getTargetCurrency(),
+                        exchangeRate.toString(),
+                        decimalAmountFormat.format(exchangeAmount),
+                        decimalAmountFormat.format(convertedAmount)));
+            } catch (ParseException e) {
+                return result;
+            }
         }
         return result;
     }
@@ -116,14 +132,23 @@ public class ExchangeRateService {
                 exchangeAmountDto.getTargetCurrency().getId(),
                 exchangeAmountDto.getBaseCurrency().getId());
         if (exchangeRateTargetToBase.isPresent()) {
-            result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
-                    exchangeAmountDto.getTargetCurrency(),
-                    1 / exchangeRateTargetToBase.get().getRate(),
-                    exchangeAmountDto.getExchangeAmount(),
-                    1 / exchangeRateTargetToBase.get().getRate() * exchangeAmountDto.getExchangeAmount()));
+            try {
+                var exchangeRate = new BigDecimal("1")
+                        .divide(BigDecimal.valueOf(exchangeRateTargetToBase.get().getRate()),6, RoundingMode.HALF_UP);
+                var exchangeAmount = (BigDecimal) decimalAmountFormat.parse(exchangeAmountDto.getExchangeAmount());
+                var convertedAmount = exchangeRate.multiply(exchangeAmount);
+                result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
+                        exchangeAmountDto.getTargetCurrency(),
+                        exchangeRate.toString(),
+                        decimalAmountFormat.format(exchangeAmount),
+                        decimalAmountFormat.format(convertedAmount)));
+            } catch (ParseException e) {
+                return result;
+            }
         }
         return result;
     }
+
 
     private Optional<ExchangeAmountDto> exchangeViaUsd(ExchangeAmountDto exchangeAmountDto) throws SQLException{
         Optional<ExchangeAmountDto> result = Optional.empty();
@@ -136,12 +161,19 @@ public class ExchangeRateService {
         var exchangeRateUsdToTarget = exchangeRateDao.getByIds(usd.get().getId(),
                 exchangeAmountDto.getTargetCurrency().getId());
         if (exchangeRateUsdToBase.isPresent() && exchangeRateUsdToTarget.isPresent()) {
-            result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
-                    exchangeAmountDto.getTargetCurrency(),
-                    1 / exchangeRateUsdToBase.get().getRate() * exchangeRateUsdToTarget.get().getRate(),
-                    exchangeAmountDto.getExchangeAmount(),
-                    1 / exchangeRateUsdToBase.get().getRate() * exchangeRateUsdToTarget.get().getRate() *
-                            exchangeAmountDto.getExchangeAmount()));
+            try {
+                var exchangeRate = BigDecimal.valueOf(exchangeRateUsdToTarget.get().getRate())
+                        .divide(BigDecimal.valueOf(exchangeRateUsdToBase.get().getRate()), 6, RoundingMode.HALF_UP);
+                var exchangeAmount = (BigDecimal) decimalAmountFormat.parse(exchangeAmountDto.getExchangeAmount());
+                var convertedAmount = exchangeRate.multiply(exchangeAmount);
+                result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
+                        exchangeAmountDto.getTargetCurrency(),
+                        exchangeRate.toString(),
+                        decimalAmountFormat.format(exchangeAmount),
+                        decimalAmountFormat.format(convertedAmount)));
+            } catch (ParseException e) {
+                return result;
+            }
         }
         return result;
     }
