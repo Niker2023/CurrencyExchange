@@ -7,8 +7,8 @@ public class ExchangeAmountDto {
 
     CurrencyDto baseCurrency;
     CurrencyDto targetCurrency;
-    double exchangeRate;
-    double exchangeAmount;
-    double convertedAmount;
+    String exchangeRate;
+    String exchangeAmount;
+    String convertedAmount;
 
 }
