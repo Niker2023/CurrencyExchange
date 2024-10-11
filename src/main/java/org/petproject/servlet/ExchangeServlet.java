@@ -26,7 +26,7 @@ public class ExchangeServlet extends HttpServlet {
 
         if (DataValidator.isCurrencyCodeNotValid(baseCurrencyCode) ||
                 DataValidator.isCurrencyCodeNotValid(targetCurrencyCode) ||
-                DataValidator.isExchangeRateNotValid(amount)) {
+                DataValidator.isAmountNotValid(amount)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write(gson.toJson(new ErrorResponse("The required form is missing from the address or is incorrect.")));
             return;
@@ -40,7 +40,7 @@ public class ExchangeServlet extends HttpServlet {
             if (optionalBaseCurrencyDto.isPresent() && optionalTargetCurrencyDto.isPresent()) {
                 var exchangeAmountDto = new ExchangeAmountDto(optionalBaseCurrencyDto.get(),
                         optionalTargetCurrencyDto.get(),
-                        0, Double.parseDouble(amount), 0);
+                        "", amount, "");
                 var result = exchangeRateService.exchangeAmount(exchangeAmountDto);
                 if (result.isPresent()) {
                     resp.getWriter().write(gson.toJson(result.get()));
