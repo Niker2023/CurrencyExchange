@@ -13,6 +13,11 @@ public class DataValidator {
 
 
     public static boolean isExchangeRateNotValid(String rate) {
-        return rate == null || !(rate.matches("^[0-9]+(\\.[0-9])?[0-9]{0,5}$") && Double.parseDouble(rate) != 0);
+        return rate == null || !(rate.matches("^[0-9]+(\\.[0-9]{1,6})?$") && Double.parseDouble(rate) != 0);
+    }
+
+
+    public static boolean isAmountNotValid(String amount) {
+        return amount == null || !(amount.matches("^[0-9]+(\\.[0-9]{1,2})?$") && Double.parseDouble(amount) != 0);
     }
 }
