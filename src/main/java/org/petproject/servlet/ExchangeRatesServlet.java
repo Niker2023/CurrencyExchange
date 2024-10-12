@@ -72,7 +72,7 @@ public class ExchangeRatesServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().write(gson.toJson(new ErrorResponse("One (or both) currency from the currency pair does not exist in the database.")));
         } catch (SQLException exception) {
-            if (exception.getMessage().equals("org.sqlite.SQLiteException: [SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: ExchangeRates.BaseCurrencyId, ExchangeRates.TargetCurrencyId)")) {
+            if (exception.getMessage().equals("[SQLITE_CONSTRAINT_UNIQUE] A UNIQUE constraint failed (UNIQUE constraint failed: ExchangeRates.BaseCurrencyId, ExchangeRates.TargetCurrencyId)")) {
                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
                 resp.getWriter().write(gson.toJson(new ErrorResponse("A currency pair with this code already exists.")));
             } else {
