@@ -107,8 +107,6 @@ public class ExchangeRateDao  {
             preparedStatement.setInt(3, exchangeRate.getTargetCurrencyId());
             preparedStatement.executeUpdate();
             return getByIds(exchangeRate.getBaseCurrencyId(), exchangeRate.getTargetCurrencyId());
-        } catch (SQLException e) {
-            throw new SQLException(e);
         }
     }
 
@@ -133,7 +131,6 @@ public class ExchangeRateDao  {
                         resultSet.getInt("TargetCurrencyId"),
                         resultSet.getDouble("Rate")));
             }
-
             return exchangeRates;
         }
     }
