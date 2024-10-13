@@ -63,8 +63,8 @@ public class CurrencyDao {
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return Optional.of(new Currency(resultSet.getInt("id"),
-                        resultSet.getString("FullName"),
                         resultSet.getString("Code"),
+                        resultSet.getString("FullName"),
                         resultSet.getString("Sign")));
             } else {
                 return Optional.empty();
