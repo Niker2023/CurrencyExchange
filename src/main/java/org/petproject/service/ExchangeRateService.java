@@ -27,6 +27,8 @@ public class ExchangeRateService {
 
     private final DecimalFormat decimalAmountFormat = new DecimalFormat("#0.00");
 
+    private final int RoundingRate = 6;
+
     public static ExchangeRateService getInstance() {
         return INSTANCE;
     }
@@ -134,7 +136,7 @@ public class ExchangeRateService {
         if (exchangeRateTargetToBase.isPresent()) {
             try {
                 var exchangeRate = new BigDecimal("1")
-                        .divide(BigDecimal.valueOf(exchangeRateTargetToBase.get().getRate()),6, RoundingMode.HALF_UP);
+                        .divide(BigDecimal.valueOf(exchangeRateTargetToBase.get().getRate()), RoundingRate, RoundingMode.HALF_UP);
                 var exchangeAmount = (BigDecimal) decimalAmountFormat.parse(exchangeAmountDto.getExchangeAmount());
                 var convertedAmount = exchangeRate.multiply(exchangeAmount);
                 result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
@@ -163,7 +165,7 @@ public class ExchangeRateService {
         if (exchangeRateUsdToBase.isPresent() && exchangeRateUsdToTarget.isPresent()) {
             try {
                 var exchangeRate = BigDecimal.valueOf(exchangeRateUsdToTarget.get().getRate())
-                        .divide(BigDecimal.valueOf(exchangeRateUsdToBase.get().getRate()), 6, RoundingMode.HALF_UP);
+                        .divide(BigDecimal.valueOf(exchangeRateUsdToBase.get().getRate()), RoundingRate, RoundingMode.HALF_UP);
                 var exchangeAmount = (BigDecimal) decimalAmountFormat.parse(exchangeAmountDto.getExchangeAmount());
                 var convertedAmount = exchangeRate.multiply(exchangeAmount);
                 result = Optional.of(new ExchangeAmountDto(exchangeAmountDto.getBaseCurrency(),
