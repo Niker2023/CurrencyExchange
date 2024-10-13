@@ -8,40 +8,37 @@ import java.sql.SQLException;
 
 public final class ConnectionManager {
 
-    private static final String PATH_TO_DB = "/home/nikita/IdeaProjects/CurrencyExchange/currency.db";
-//    private static final String PATH_TO_DB = "/home/currency.db";  // for test 500 error
-    private static final HikariConfig config = new HikariConfig();
+    private static final String PATH_TO_DB = "/var/tmp/currency.db";
     private static HikariDataSource dataSource;
 
 
     static {
-        loadDriver();
+        setTmpDir();
     }
 
 
-    private static void loadDriver() {
+    private static void setTmpDir() {
         System.setProperty("java.io.tmpdir", "/var/tmp");
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
-    private ConnectionManager() {
+    private static void createPoolConnections() {
+        HikariConfig config = new HikariConfig();
+        config.setPoolName("SQLiteConnectionPool");
+        config.setMaximumPoolSize(5);
+        config.setDriverClassName("org.sqlite.JDBC");
+        config.setJdbcUrl("jdbc:sqlite:" + PATH_TO_DB);
+        dataSource = new HikariDataSource(config);
     }
+
+
+    private ConnectionManager() {}
 
 
     public static Connection get() throws SQLException {
-        try {
             if (dataSource == null) {
-                config.setJdbcUrl("jdbc:sqlite:" + PATH_TO_DB);
-                dataSource = new HikariDataSource(config);
+                createPoolConnections();
             }
             return dataSource.getConnection();
-        } catch (Exception e) {
-            throw new SQLException(e);
-        }
     }
 }
