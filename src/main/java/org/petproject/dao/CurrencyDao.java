@@ -13,7 +13,8 @@ public class CurrencyDao {
     private static final CurrencyDao INSTANCE = new CurrencyDao();
 
 
-    private CurrencyDao(){}
+    private CurrencyDao() {
+    }
 
 
     public static CurrencyDao getInstance() {
@@ -31,8 +32,7 @@ public class CurrencyDao {
                 (
                         var connection = ConnectionManager.get();
                         var preparedStatement = connection.prepareStatement(FIND_BY_CODE)
-                )
-        {
+                ) {
             preparedStatement.setString(1, code);
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -57,8 +57,7 @@ public class CurrencyDao {
                 (
                         var connection = ConnectionManager.get();
                         var preparedStatement = connection.prepareStatement(FIND_BY_ID)
-                )
-        {
+                ) {
             preparedStatement.setInt(1, id);
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -82,12 +81,10 @@ public class CurrencyDao {
                 (
                         var connection = ConnectionManager.get();
                         var preparedStatement = connection.prepareStatement(FIND_ALL)
-                )
-        {
+                ) {
             var rs = preparedStatement.executeQuery();
             List<Currency> currencies = new ArrayList<>();
-            while(rs.next())
-            {
+            while (rs.next()) {
                 currencies.add(new Currency(rs.getInt("id"), rs.getString("Code"),
                         rs.getString("FullName"), rs.getString("Sign")));
             }
@@ -105,8 +102,7 @@ public class CurrencyDao {
                 (
                         var connection = ConnectionManager.get();
                         var preparedStatement = connection.prepareStatement(INSERT_CURRENCY)
-                )
-        {
+                ) {
             preparedStatement.setString(1, currency.getCode());
             preparedStatement.setString(2, currency.getName());
             preparedStatement.setString(3, currency.getSign());
