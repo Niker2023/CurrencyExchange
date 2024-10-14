@@ -38,11 +38,11 @@ public class ExchangeRateService {
     }
 
     public List<ExchangeRateDto> findAll() throws SQLException {
-            List<ExchangeRateDto> collect = new ArrayList<>();
-            for (ExchangeRate exchangeRate : exchangeRateDao.getAll()) {
-                ExchangeRateDto exchangeRateDto = ExchangeRateMapper.INSTANCE.toExchangeRateDto(exchangeRate);
-                collect.add(exchangeRateDto);
-            }
+        List<ExchangeRateDto> collect = new ArrayList<>();
+        for (ExchangeRate exchangeRate : exchangeRateDao.getAll()) {
+            ExchangeRateDto exchangeRateDto = ExchangeRateMapper.INSTANCE.toExchangeRateDto(exchangeRate);
+            collect.add(exchangeRateDto);
+        }
         return collect;
     }
 
@@ -152,7 +152,7 @@ public class ExchangeRateService {
     }
 
 
-    private Optional<ExchangeAmountDto> exchangeViaUsd(ExchangeAmountDto exchangeAmountDto) throws SQLException{
+    private Optional<ExchangeAmountDto> exchangeViaUsd(ExchangeAmountDto exchangeAmountDto) throws SQLException {
         Optional<ExchangeAmountDto> result = Optional.empty();
         var usd = currencyDao.getByCode("USD");
         if (usd.isEmpty()) {
