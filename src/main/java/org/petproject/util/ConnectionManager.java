@@ -32,13 +32,14 @@ public final class ConnectionManager {
     }
 
 
-    private ConnectionManager() {}
+    private ConnectionManager() {
+    }
 
 
     public static Connection get() throws SQLException {
-            if (dataSource == null) {
-                createPoolConnections();
-            }
-            return dataSource.getConnection();
+        if (dataSource == null) {
+            createPoolConnections();
+        }
+        return dataSource.getConnection();
     }
 }
