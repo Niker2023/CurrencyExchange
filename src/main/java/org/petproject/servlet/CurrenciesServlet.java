@@ -38,9 +38,7 @@ public class CurrenciesServlet extends HttpServlet {
         var code = req.getParameter("code");
         var sign = req.getParameter("sign");
 
-        if (name == null || name.isBlank() ||
-                sign == null || sign.isBlank() ||
-                DataValidator.isCurrencyCodeNotValid(code)) {
+        if (name == null || name.isBlank() || sign == null || sign.isBlank() || DataValidator.isCurrencyCodeNotValid(code)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write(gson.toJson(new ErrorResponse("The required form field is missing or incorrect.")));
             return;
