@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ExchangeRateDao  {
+public class ExchangeRateDao {
 
     private static final ExchangeRateDao INSTANCE = new ExchangeRateDao();
 
 
-    private ExchangeRateDao() {}
+    private ExchangeRateDao() {
+    }
 
 
     public static ExchangeRateDao getInstance() {
@@ -35,8 +36,7 @@ public class ExchangeRateDao  {
                 (
                         var connection = ConnectionManager.get();
                         var preparedStatement = connection.prepareStatement(FIND_BY_CODES)
-                )
-        {
+                ) {
             preparedStatement.setInt(1, baseCurrencyId);
             preparedStatement.setInt(2, targetCurrencyId);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -54,7 +54,7 @@ public class ExchangeRateDao  {
                     resultSet.getInt("BaseCurrencyId"),
                     resultSet.getInt("TargetCurrencyId"),
                     resultSet.getDouble("Rate")));
-            }
+        }
         return Optional.empty();
     }
 
@@ -68,8 +68,7 @@ public class ExchangeRateDao  {
                 (
                         var connection = ConnectionManager.get();
                         var preparedStatement = connection.prepareStatement(INSERT_EXCHANGE_RATE)
-                )
-        {
+                ) {
             preparedStatement.setInt(1, exchangeRate.getBaseCurrencyId());
             preparedStatement.setInt(2, exchangeRate.getTargetCurrencyId());
             preparedStatement.setDouble(3, exchangeRate.getRate());
@@ -100,8 +99,7 @@ public class ExchangeRateDao  {
                 (
                         var connection = ConnectionManager.get();
                         var preparedStatement = connection.prepareStatement(UPDATE_RATE)
-                )
-        {
+                ) {
             preparedStatement.setDouble(1, exchangeRate.getRate());
             preparedStatement.setInt(2, exchangeRate.getBaseCurrencyId());
             preparedStatement.setInt(3, exchangeRate.getTargetCurrencyId());
@@ -120,12 +118,10 @@ public class ExchangeRateDao  {
                 (
                         var connection = ConnectionManager.get();
                         var preparedStatement = connection.prepareStatement(FIND_ALL)
-                )
-        {
+                ) {
             var resultSet = preparedStatement.executeQuery();
             List<ExchangeRate> exchangeRates = new ArrayList<>();
-            while(resultSet.next())
-            {
+            while (resultSet.next()) {
                 exchangeRates.add(new ExchangeRate(resultSet.getInt("id"),
                         resultSet.getInt("BaseCurrencyId"),
                         resultSet.getInt("TargetCurrencyId"),
