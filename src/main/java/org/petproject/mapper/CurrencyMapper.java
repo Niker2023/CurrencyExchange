@@ -8,6 +8,8 @@ import org.petproject.entity.Currency;
 @Mapper
 public interface CurrencyMapper {
     CurrencyMapper INSTANCE = Mappers.getMapper(CurrencyMapper.class);
+
     CurrencyDto toDto(Currency currency);
+
     Currency fromDto(CurrencyDto dto);
 }
