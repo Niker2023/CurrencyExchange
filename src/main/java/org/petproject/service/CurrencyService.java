@@ -20,7 +20,8 @@ public class CurrencyService {
         return INSTANCE;
     }
 
-    private CurrencyService() {}
+    private CurrencyService() {
+    }
 
 
     public List<CurrencyDto> findAll() throws SQLException {
