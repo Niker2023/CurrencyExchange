@@ -95,8 +95,8 @@ public class ExchangeRateServlet extends HttpServlet {
                     resp.getWriter().write(gson.toJson(saved.get()));
                     return;
                 }
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            resp.getWriter().write(gson.toJson(new ErrorResponse("The currency pair is missing from the database.")));
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.getWriter().write(gson.toJson(new ErrorResponse("The currency pair is missing from the database.")));
             }
         } catch (SQLException exception) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
