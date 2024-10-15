@@ -86,7 +86,8 @@ public class ExchangeRateServlet extends HttpServlet {
             var optionalTargetCurrencyDto = currencyService.getByCode(targetCurrency);
             ExchangeRateDto exchangeRateDto;
             if (optionalBaseCurrencyDto.isPresent() && optionalTargetCurrencyDto.isPresent()) {
-                exchangeRateDto = new ExchangeRateDto(optionalBaseCurrencyDto.get(),
+                exchangeRateDto = new ExchangeRateDto(0,
+                        optionalBaseCurrencyDto.get(),
                         optionalTargetCurrencyDto.get(),
                         Double.parseDouble(rate));
 
