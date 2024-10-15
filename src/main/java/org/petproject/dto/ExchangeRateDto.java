@@ -17,12 +17,4 @@ public class ExchangeRateDto {
         this.targetCurrency = targetCurrency;
         this.rate = rate;
     }
-
-
-    public ExchangeRateDto(CurrencyDto baseCurrency, CurrencyDto targetCurrency, double rate) {
-        this.id = 0;
-        this.baseCurrency = baseCurrency;
-        this.targetCurrency = targetCurrency;
-        this.rate = rate;
-    }
 }
