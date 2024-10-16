@@ -20,9 +20,10 @@ public class CurrencyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        var codeString = req.getPathInfo().substring(1);
+        String codeString;
 
-        if (DataValidator.isCurrencyCodeNotValid(codeString)) {
+        if (req.getPathInfo().isBlank()
+                || DataValidator.isCurrencyCodeNotValid(codeString = req.getPathInfo().substring(1))) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             resp.getWriter().write(gson.toJson(new ErrorResponse("The currency code is missing from the address or is incorrect.")));
             return;
