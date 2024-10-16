@@ -26,9 +26,10 @@ public class ExchangeRateServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        var codeString = req.getPathInfo().substring(1);
+        String codeString;
 
-        if (DataValidator.isCurrenciesCodesNotValid(codeString)) {
+        if (req.getPathInfo().isBlank()
+                || DataValidator.isCurrenciesCodesNotValid(codeString = req.getPathInfo().substring(1))) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write(gson.toJson(new ErrorResponse("The currency codes of the pair are missing in the address.")));
             return;
