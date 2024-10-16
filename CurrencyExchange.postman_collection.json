@@ -1,0 +1,348 @@
+{
+	"info": {
+		"_postman_id": "00575aa5-fe41-4149-84b8-39f49399f2d0",
+		"name": "CurrencyExchangeDeploy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37102814"
+	},
+	"item": [
+		{
+			"name": "localhost:8080/currencies",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "Hello\nFrom\nPostman!",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "77.238.243.146:8080/CurrencyExchange-1.0/currencies",
+					"host": [
+						"77",
+						"238",
+						"243",
+						"146"
+					],
+					"port": "8080",
+					"path": [
+						"CurrencyExchange-1.0",
+						"currencies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/currencies",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "Armenian Dram",
+							"type": "text"
+						},
+						{
+							"key": "code",
+							"value": "AMD",
+							"type": "text"
+						},
+						{
+							"key": "sign",
+							"value": "֏",
+							"type": "text"
+						},
+						{
+							"key": "sign",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "77.238.243.146:8080/CurrencyExchange-1.0/currencies",
+					"host": [
+						"77",
+						"238",
+						"243",
+						"146"
+					],
+					"port": "8080",
+					"path": [
+						"CurrencyExchange-1.0",
+						"currencies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/currency/EUR",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "77.238.243.146:8080/CurrencyExchange-1.0/currency/EUR",
+					"host": [
+						"77",
+						"238",
+						"243",
+						"146"
+					],
+					"port": "8080",
+					"path": [
+						"CurrencyExchange-1.0",
+						"currency",
+						"EUR"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/exchangeRates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "77.238.243.146:8080/CurrencyExchange-1.0/exchangeRates",
+					"host": [
+						"77",
+						"238",
+						"243",
+						"146"
+					],
+					"port": "8080",
+					"path": [
+						"CurrencyExchange-1.0",
+						"exchangeRates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/exchangeRate/USDRUB",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "77.238.243.146:8080/CurrencyExchange-1.0/exchangeRate/USDRUB",
+					"host": [
+						"77",
+						"238",
+						"243",
+						"146"
+					],
+					"port": "8080",
+					"path": [
+						"CurrencyExchange-1.0",
+						"exchangeRate",
+						"USDRUB"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/exchangeRates",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "baseCurrencyCode",
+							"value": "AMD",
+							"type": "text"
+						},
+						{
+							"key": "targetCurrencyCode",
+							"value": "EUR",
+							"type": "text"
+						},
+						{
+							"key": "rate",
+							"value": "0.1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "77.238.243.146:8080/CurrencyExchange-1.0/exchangeRates",
+					"host": [
+						"77",
+						"238",
+						"243",
+						"146"
+					],
+					"port": "8080",
+					"path": [
+						"CurrencyExchange-1.0",
+						"exchangeRates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/exchangeRate/USDRUB",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "rate",
+							"value": "99.9",
+							"type": "text"
+						},
+						{
+							"key": "test",
+							"value": "0.1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "77.238.243.146:8080/CurrencyExchange-1.0/exchangeRate/USDRUB",
+					"host": [
+						"77",
+						"238",
+						"243",
+						"146"
+					],
+					"port": "8080",
+					"path": [
+						"CurrencyExchange-1.0",
+						"exchangeRate",
+						"USDRUB"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/exchange?from=USD&to=AUD&amount=10",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "77.238.243.146:8080/CurrencyExchange-1.0/exchange?from=USD&to=AUD&amount=10",
+					"host": [
+						"77",
+						"238",
+						"243",
+						"146"
+					],
+					"port": "8080",
+					"path": [
+						"CurrencyExchange-1.0",
+						"exchange"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "USD"
+						},
+						{
+							"key": "to",
+							"value": "AUD"
+						},
+						{
+							"key": "amount",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/exchange?from=EUR&to=RUB&amount=10",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "77.238.243.146:8080/CurrencyExchange-1.0/exchange?from=EUR&to=RUB&amount=10",
+					"host": [
+						"77",
+						"238",
+						"243",
+						"146"
+					],
+					"port": "8080",
+					"path": [
+						"CurrencyExchange-1.0",
+						"exchange"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "EUR"
+						},
+						{
+							"key": "to",
+							"value": "RUB"
+						},
+						{
+							"key": "amount",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/exchange?from=EUR&to=RUB&amount=10 Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "77.238.243.146:8080/CurrencyExchange-1.0/exchange?from=RUB&to=USD&amount=10",
+					"host": [
+						"77",
+						"238",
+						"243",
+						"146"
+					],
+					"port": "8080",
+					"path": [
+						"CurrencyExchange-1.0",
+						"exchange"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "RUB"
+						},
+						{
+							"key": "to",
+							"value": "USD"
+						},
+						{
+							"key": "amount",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
