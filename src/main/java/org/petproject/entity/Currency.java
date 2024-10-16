@@ -10,10 +10,10 @@ public class Currency {
     private String code;
     private String sign;
 
-    public Currency(int id, String code, String fullName, String sign) {
+    public Currency(int id, String code, String name, String sign) {
         this.id = id;
         this.code = code;
         this.sign = sign;
-        this.name = fullName;
+        this.name = name;
     }
 }
